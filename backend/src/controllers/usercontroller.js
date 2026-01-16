@@ -5,13 +5,13 @@ import jwt from 'jsonwebtoken';
 export const register = async(req,res)=>{
     try{
         const {email,fullname, phoneNumber, password, role} = req.body;
-        if(!email || !fullname || !phoneNumber || !password || !role){
+        if(!email || !fullname || !password || !role){
             return res.status(400).json({message: 'Please fill in all fields', success: false
             });
         }
-        const user= await User.findOne({email, phoneNumber});
+        const user= await User.findOne({email});
         if(user){
-            return res.status(400).json({message: 'User already exists', success: false
+            return res.status(400).json({message: 'User already exists with this email', success: false
             });
         }
         const hashedPassword= await bcrypt.hash(password, 10);
@@ -23,8 +23,13 @@ export const register = async(req,res)=>{
             role,
         });
         await newUser.save();
-        return res.status(201).json({message: 'User registered successfully', success: true
-        });
+        
+        const tokenData={
+            userId:newUser._id
+        }
+        const token= jwt.sign(tokenData, process.env.JWT_SECRET, {expiresIn: '1d'});
+        
+        return res.status(201).cookie('token', token, {maxAge: 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'strict'}).json({message: 'User registered successfully', success: true, user: newUser});
     }catch(error){
         return res.status(500).json({message: error.message, success: false
         });
@@ -56,7 +61,7 @@ export const login = async(req,res)=>{
             userId:user._id
         }
         const token= jwt.sign(tokenData, process.env.JWT_SECRET, {expiresIn: '1d'});
-        return res.status(200).cookie('token', token, {maxAge: 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'strict'}).json({message: `Welcome back ${user.role}, ${user.fullname}`, success: true, token});
+        return res.status(200).cookie('token', token, {maxAge: 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'strict'}).json({message: `Welcome back ${user.role}, ${user.fullname}`, success: true, user, token});
     }catch(error){
         return res.status(500).json({message: error.message, success: false
         });
@@ -132,5 +137,19 @@ export const deleteProfile = async(req,res)=>{
     }catch(error){
         return res.status(500).json({message: error.message, success: false
         });
+    }
+}
+
+export const checkAuth = async (req, res) => {
+    try {
+        const userId = req.id;
+        const user = await User.findById(userId).select("-password");
+        if (!user) {
+            return res.status(404).json({ message: "User not found", success: false });
+        }
+        return res.status(200).json({ success: true, user });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal server error", success: false });
     }
 }

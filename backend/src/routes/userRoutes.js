@@ -1,14 +1,24 @@
-import express from 'express';
-import {register, login, logout, getProfile, updateProfile, deleteProfile} from '../controllers/usercontroller.js';
-import useAuth from '../middleware/userAuth.js';
+import express from "express";
+import {
+  register,
+  login,
+  logout,
+  getProfile,
+  updateProfile,
+  deleteProfile,
+  checkAuth,
+} from "../controllers/usercontroller.js";
+import useAuth from "../middleware/userAuth.js";
+import { singleUpload } from "../middleware/multer.js";
 
 const router = express.Router();
 
-router.route('/register').post(register);
-router.route('/login').post(login);
-router.route('/logout').get(useAuth,logout);
-router.route('/profile').get(useAuth, getProfile)
-router.route('/profile/update').post(useAuth, updateProfile);
-router.route('/profile/delete').delete(useAuth, deleteProfile);
+router.route("/register").post(register);
+router.route("/login").post(login);
+router.route("/logout").get(useAuth, logout);
+router.route("/profile").get(useAuth, getProfile);
+router.route("/profile/update").post(useAuth, singleUpload, updateProfile);
+router.route("/profile/delete").delete(useAuth, deleteProfile);
+router.route("/me").get(useAuth, checkAuth);
 
 export default router;
