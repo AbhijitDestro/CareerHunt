@@ -6,6 +6,8 @@ import Contact from './pages/Contact'
 import SignUp from './pages/auth/SignUp'
 import SignIn from './pages/auth/SignIn'
 import Dashboard from './pages/protected/Dashboard'
+import Profile from './pages/protected/Profile'
+import JobDetails from './pages/JobDetails'
 import ProtectedRoute from './components/ProtectedRoute'
 import { AuthProvider } from './context/AuthContext'
 
@@ -20,6 +22,8 @@ const App = () => {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/jobs/:id" element={<JobDetails />} />
       </Routes>
       </AuthProvider>
       <Toaster />

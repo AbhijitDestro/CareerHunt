@@ -11,14 +11,14 @@ const userSchema = new mongoose.Schema({
         unique: true,
         match: [/.+@.+\..+/, 'Please use a valid email address'],
         trim: true,
-        minLength: [10, 'Email must be at least 10 characters long'],
+        minLength: [8, 'Email must be at least 8 characters long'],
     },
     phoneNumber: {
         type: Number,
-        unique: true,
         sparse: true,
-        match: [/^\d{10}$/, 'Please use a valid phone number'],
+        validate: { validator: v => v === null || /^[0-9]{10}$/.test(v), message: 'Please use a valid phone number' },
         trim: true,
+        default: null,
     },
     password: {
         type: String,
@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema({
         skills: [{type: String,trim: true}],
         resume: {type:String},
         resumeOriginalName: {type:String},
-        companyName: {type: mongoose.Schema.Types.ObjectId, ref: 'Company'},
+        companyName: {type: mongoose.Schema.Types.ObjectId, ref: 'Company', default: null, sparse: true},
         profilePhoto: {type:String, default: ''},
     }
 },{timestamps: true})

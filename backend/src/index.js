@@ -20,6 +20,16 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Request logging middleware
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    console.log('Headers:', req.headers);
+    if (req.method === 'POST' || req.method === 'PUT') {
+        console.log('Body:', req.body);
+    }
+    next();
+});
+
 const PORT= process.env.PORT || 3000;
 
 app.get("/", (req, res) => {

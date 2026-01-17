@@ -36,6 +36,7 @@ const SignUp = () => {
 
     const submitEventHandler= async (e)=>{
         e.preventDefault();
+        console.log('Submitting registration with data:', input);
         try{
             setLoading(true);
             const res = await axios.post(`${USER_API_END_POINT}/register`, input, {
@@ -52,7 +53,9 @@ const SignUp = () => {
             }
         }
         catch(err){
-            console.log(err);
+            console.log('Registration error details:', err);
+            console.log('Error response:', err.response);
+            console.log('Error response data:', err.response?.data);
             if(err.response?.data?.error){
                 toast.error(err.response.data.error);
             } else {

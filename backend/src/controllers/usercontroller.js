@@ -4,13 +4,19 @@ import jwt from 'jsonwebtoken';
 
 export const register = async(req,res)=>{
     try{
-        const {email,fullname, phoneNumber, password, role} = req.body;
+        console.log('Registration request received:', req.body);
+        const {email,fullname, password, role} = req.body;
+        console.log('Extracted data:', {email, fullname, password: password ? '***' : 'missing', role});
+        
         if(!email || !fullname || !password || !role){
+            console.log('Validation failed: missing fields');
             return res.status(400).json({message: 'Please fill in all fields', success: false
             });
         }
+        console.log('Checking if user exists with email:', email);
         const user= await User.findOne({email});
         if(user){
+            console.log('User already exists');
             return res.status(400).json({message: 'User already exists with this email', success: false
             });
         }
@@ -18,11 +24,13 @@ export const register = async(req,res)=>{
         const newUser= new User({
             email,
             fullname,
-            phoneNumber,
+            phoneNumber: null,
             password: hashedPassword,
             role,
         });
+        console.log('Creating new user with data:', {email, fullname, role, phoneNumber: null});
         await newUser.save();
+        console.log('User saved successfully:', newUser._id);
         
         const tokenData={
             userId:newUser._id
@@ -31,6 +39,8 @@ export const register = async(req,res)=>{
         
         return res.status(201).cookie('token', token, {maxAge: 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'strict'}).json({message: 'User registered successfully', success: true, user: newUser});
     }catch(error){
+        console.error('Registration error:', error);
+        console.error('Error stack:', error.stack);
         return res.status(500).json({message: error.message, success: false
         });
     }
