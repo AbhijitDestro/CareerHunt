@@ -35,10 +35,22 @@ const userSchema = new mongoose.Schema({
         bio: {type: String,trim: true},
         skills: [{type: String,trim: true}],
         resume: {type:String},
+        location: {type:String},
+        yearsOfExperience: {type:Number, default: 0},
+        linkedinProfile: {type:String},
         resumeOriginalName: {type:String},
-        companyName: {type: mongoose.Schema.Types.ObjectId, ref: 'Company', default: null, sparse: true},
+        companyName: {type: String},
         profilePhoto: {type:String, default: ''},
+        experiences: [
+            {
+                jobRole: {type: String},
+                companyName: {type: String},
+                timeline: {type: String},
+                description: {type: String}
+            }
+        ]
     }
 },{timestamps: true})
+
 
 export const User= mongoose.model('User', userSchema);

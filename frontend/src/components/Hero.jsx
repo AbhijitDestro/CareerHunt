@@ -78,7 +78,7 @@ const Hero = () => {
        
         <p className="text-gray-400 text-sm sm:text-lg tracking-widest mb-4 font-semibold uppercase">Find Your Dream Career</p>
        
-        <div ref={titleRef} className="mb-12">
+        <div ref={titleRef} className="mb-10">
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight tracking-tight">
             Unlock Your <br />
             <span className="flex items-center justify-center gap-4 flex-wrap">

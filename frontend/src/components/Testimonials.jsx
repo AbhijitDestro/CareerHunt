@@ -34,12 +34,12 @@ const Testimonials = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {testimonials.map((t, idx) => (
                         <div key={idx} className="bg-[#13131f] p-8 rounded-3xl border border-white/5 relative hover:-translate-y-2 transition-transform duration-300">
-                            <FaQuoteLeft className="text-purple-500/20 text-4xl mb-6" />
+                            <FaQuoteLeft className="text-[#1178bd]/20 text-4xl mb-6" />
                             <p className="text-gray-300 mb-8 leading-relaxed">
                                 "{t.content}"
                             </p>
                             <div className="flex items-center gap-4">
-                                <img src={t.image} alt={t.name} className="w-12 h-12 rounded-full border-2 border-purple-500/50" />
+                                <img src={t.image} alt={t.name} className="w-12 h-12 rounded-full border-2 border-[#1178bd]" />
                                 <div>
                                     <h4 className="text-white font-bold">{t.name}</h4>
                                     <p className="text-sm text-gray-400">{t.role}</p>

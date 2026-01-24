@@ -10,6 +10,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from './ui/sidebar'
+import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar'
 import {
   Home,
   Briefcase,
@@ -37,16 +38,14 @@ const AppSidebar = () => {
     if (user?.role === 'recruiter') {
       return [
         ...baseItems,
-        { title: 'My Companies', icon: Building2, href: '/companies' },
-        { title: 'My Jobs', icon: Briefcase, href: '/jobs' },
-        { title: 'Applications', icon: FileText, href: '/applications' },
+        { title: 'My Companies', icon: Building2, href: '/admin/companies' },
+        { title: 'My Jobs', icon: Briefcase, href: '/admin/jobs' },
       ]
     } else if (user?.role === 'candidate') {
       return [
         ...baseItems,
         { title: 'Applied Jobs', icon: Briefcase, href: '/applied-jobs' },
         { title: 'Job Search', icon: Search, href: '/job-search' },
-        { title: 'Companies', icon: Building2, href: '/companies' },
         { title: 'Notifications', icon: Bell, href: '/notifications' },
       ]
     }
@@ -67,8 +66,8 @@ const AppSidebar = () => {
       <SidebarContent>
         <SidebarHeader>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">C</span>
+            <div className="w-10 h-10">
+              <img src="/logo.png" alt="logo" className="w-full h-full object-cover" />
             </div>
             <div>
               <h2 className="text-white font-semibold text-lg">CareerHunt</h2>
@@ -97,18 +96,29 @@ const AppSidebar = () => {
         </SidebarMenu>
 
         <SidebarFooter>
-          <div className="space-y-2">
-            <div className="px-3 py-2 text-sm text-gray-400">
+          <div className="flex items-center gap-1">
+          <div> 
+            <Avatar className="w-8 h-8">
+              <AvatarImage className='w-full h-full object-cover'
+                src={user?.profile?.profilePhoto || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'} 
+                alt={user?.fullname || 'User Avatar'} 
+              />
+              <AvatarFallback>
+                {user?.fullname?.charAt(0)?.toUpperCase() || 'U'}
+              </AvatarFallback>
+            </Avatar>
+            </div>
+            <div className="px-2 py-2 text-sm text-gray-400">
               <p className="font-medium text-white">{user?.fullname}</p>
               <p className="text-xs">{user?.email}</p>
             </div>
+            </div>
             <SidebarMenuItem>
-              <SidebarMenuButton onClick={handleLogout}>
+              <SidebarMenuButton onClick={handleLogout} className="cursor-pointer hover:text-red-500">
                 <LogOut className="h-4 w-4" />
                 <span>Sign Out</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
-          </div>
         </SidebarFooter>
       </SidebarContent>
     </Sidebar>

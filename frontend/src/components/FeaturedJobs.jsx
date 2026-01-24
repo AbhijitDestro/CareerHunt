@@ -1,39 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FiArrowRight, FiClock, FiDollarSign } from 'react-icons/fi';
+import axios from 'axios';
+import { JOB_API_END_POINT } from '../utils/constant';
+import { useNavigate } from 'react-router-dom';
 
 const FeaturedJobs = () => {
-  const jobs = [
-    {
-      id: 1,
-      role: 'Senior Product Designer',
-      company: 'Spotify',
-      type: 'Remote',
-      time: 'Full Time',
-      salary: '$120k - $140k',
-      tags: ['UI/UX', 'Figma', 'React'],
-      logoColor: 'bg-green-500'
-    },
-    {
-      id: 2,
-      role: 'Frontend Developer',
-      company: 'Linear',
-      type: 'Remote',
-      time: 'Full Time',
-      salary: '$130k - $160k',
-      tags: ['React', 'TypeScript', 'Tailwind'],
-      logoColor: 'bg-indigo-500'
-    },
-    {
-      id: 3,
-      role: 'Marketing Associate',
-      company: 'Notion',
-      type: 'Hybrid',
-      time: 'Full Time',
-      salary: '$80k - $100k',
-      tags: ['Marketing', 'SEO', 'Content'],
-      logoColor: 'bg-gray-100'
-    },
-  ];
+  const [jobs, setJobs] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+     const fetchJobs = async () => {
+         try {
+             // Fetch all and slice 3, or use a limit param if backend supported it (currently getAllJobs doesn't enforce limit but sorts by latest)
+             const res = await axios.get(`${JOB_API_END_POINT}/get`, { withCredentials: true });
+             if(res.data.success){
+                 setJobs(res.data.jobs.slice(0, 3));
+             }
+         } catch (error) {
+             console.log(error);
+         }
+     }
+     fetchJobs();
+  }, []);
 
   return (
     <section className="py-20 bg-[#0d0d12] text-white font-sans px-4 md:px-8">
@@ -43,48 +31,51 @@ const FeaturedJobs = () => {
             <span className="text-[#6C2BD9] font-medium tracking-wider uppercase text-sm mb-2 block">Featured Jobs</span>
             <h2 className="text-3xl md:text-4xl font-bold">Latest Opportunities</h2>
           </div>
-          <button className="hidden md:flex items-center gap-2 text-white/70 hover:text-white transition-colors">
+          <button onClick={() => navigate('/job-search')} className="hidden md:flex items-center gap-2 text-white/70 hover:text-white transition-colors">
             View all jobs <FiArrowRight />
           </button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {jobs.map((job) => (
-            <div key={job.id} className="group p-6 rounded-3xl bg-white/5 border border-white/5 hover:border-[#6C2BD9]/50 transition-all duration-300 hover:-translate-y-1">
+            <div key={job._id} onClick={() => navigate(`/jobs/${job._id}`)} className="cursor-pointer group p-6 rounded-3xl bg-white/5 border border-white/5 hover:border-[#6C2BD9]/50 transition-all duration-300 hover:-translate-y-1">
               <div className="flex justify-between items-start mb-6">
-                <div className={`w-12 h-12 rounded-2xl ${job.logoColor} flex items-center justify-center text-xl font-bold text-black`}>
-                  {job.company[0]}
+                 <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-xl font-bold text-black overflow-hidden">
+                    {job.company?.logo ? <img src={job.company.logo} alt={job.company.name} className="w-full h-full object-cover"/> : job.company?.name?.[0]}
                 </div>
                 <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/10 text-gray-300 border border-white/5">
-                  {job.time}
+                  {job.jobType}
                 </span>
               </div>
 
-              <h3 className="text-xl font-bold mb-1 group-hover:text-[#6C2BD9] transition-colors">{job.role}</h3>
-              <p className="text-gray-400 text-sm mb-6">{job.company} • {job.type}</p>
+              <h3 className="text-xl font-bold mb-1 group-hover:text-[#6C2BD9] transition-colors">{job.title}</h3>
+              <p className="text-gray-400 text-sm mb-6">{job.company?.name || 'Company'} • {job.jobType}</p>
 
               <div className="flex flex-wrap gap-2 mb-6">
-                {job.tags.map((tag, i) => (
-                  <span key={i} className="text-xs px-2 py-1 rounded-md bg-white/5 text-gray-400">
-                    {tag}
-                  </span>
-                ))}
+                {/* Dynamically showing some tags if available, else standard ones */}
+                 <span className="text-xs px-2 py-1 rounded-md bg-white/5 text-gray-400">
+                    {job.experienceLevel}
+                 </span>
+                 <span className="text-xs px-2 py-1 rounded-md bg-white/5 text-gray-400">
+                    Vacancies: {job.vacancies}
+                 </span>
               </div>
 
               <div className="flex items-center justify-between pt-6 border-t border-white/5">
                 <div className="flex items-center gap-1 text-sm font-medium text-white/90">
                   <FiDollarSign className="text-gray-400" />
-                  {job.salary}
+                  {job.salary} LPA
                 </div>
                 <span className="text-gray-500 text-xs flex items-center gap-1">
-                  <FiClock /> 2d ago
+                  <FiClock /> {new Date(job.createdAt).toLocaleDateString()}
                 </span>
               </div>
             </div>
           ))}
+          {jobs.length === 0 && <p className="text-gray-400 col-span-3 text-center">No featured jobs available at the moment.</p>}
         </div>
 
-        <button className="mt-8 mx-auto w-full md:hidden flex items-center justify-center gap-2 py-3 rounded-full bg-white/10 text-white font-medium hover:bg-white/20 transition-colors">
+        <button onClick={() => navigate('/job-search')} className="mt-8 mx-auto w-full md:hidden flex items-center justify-center gap-2 py-3 rounded-full bg-white/10 text-white font-medium hover:bg-white/20 transition-colors">
             View all jobs <FiArrowRight />
         </button>
       </div>

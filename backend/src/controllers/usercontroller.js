@@ -1,6 +1,8 @@
 import { User } from "../models/User.js";
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import getDataUri from "../utils/datauri.js";
+import cloudinary from "../utils/cloudinary.js";
 
 export const register = async(req,res)=>{
     try{
@@ -88,32 +90,93 @@ export const logout = async(req,res)=>{
     }
 }
 
-export const updateProfile = async(req,res)=>{
-    try{
-     const {fullname, email, phoneNumber, bio, skills, resume, resumeOriginalName, companyName, profilePhoto} = req.body;
-     const file = req.file;
+export const updateProfile = async (req, res) => {
+    try {
+        const { fullname, email, phoneNumber, bio, skills, location, linkedinProfile, yearsOfExperience, companyName, experiences } = req.body;
+        
+        const userId = req.id;
+        let user = await User.findById(userId);
+        if (!user) {
+            return res.status(400).json({
+                message: 'User not found', success: false
+            });
+        }
 
-     const skillsArray= skills ? skills.split(',') : [];
-     const userId = req.id;
-     let user= await User.findById(userId);
-     if(!user){
-        return res.status(400).json({message: 'User not found', success: false
+        // Handle file uploads
+        if (req.files) {
+            if (req.files.profilePhoto) {
+                const profilePhotoFile = req.files.profilePhoto[0];
+                const profilePhotoUri = getDataUri(profilePhotoFile);
+                const cloudResponse = await cloudinary.uploader.upload(profilePhotoUri.content);
+                user.profile.profilePhoto = cloudResponse.secure_url;
+            }
+
+            if (req.files.resume) {
+                const resumeFile = req.files.resume[0];
+                const resumeUri = getDataUri(resumeFile);
+                // Use resource_type: 'auto' to allow non-image files like PDFs to be handling correctly
+                const cloudResponse = await cloudinary.uploader.upload(resumeUri.content, { resource_type: 'auto' });
+                user.profile.resume = cloudResponse.secure_url;
+                user.profile.resumeOriginalName = resumeFile.originalname;
+            }
+        }
+
+        // Update fields if provided
+        if(fullname) user.fullname = fullname;
+        if(email) user.email = email;
+        
+        // Handle phone number specifically to avoid casting empty string to 0 or null errors
+        if(phoneNumber && phoneNumber !== "null" && phoneNumber !== "undefined" && phoneNumber.trim() !== "") {
+             user.phoneNumber = Number(phoneNumber);
+        }
+        
+        if (!user.profile) user.profile = {};
+
+        if(bio) user.profile.bio = bio;
+        
+        if(skills) {
+            try {
+                // simple splitting if it's comma separated, or JSON parse
+                if(typeof skills === 'string') {
+                    if(skills.startsWith('[')) {
+                         user.profile.skills = JSON.parse(skills);
+                    } else {
+                         user.profile.skills = skills.split(',').map(skill => skill.trim()).filter(s => s);
+                    }
+                } else if(Array.isArray(skills)){
+                    user.profile.skills = skills;
+                }
+            } catch (error) {
+                console.log("Error parsing skills:", error);
+            }
+        }
+
+        if(location) user.profile.location = location;
+        if(linkedinProfile) user.profile.linkedinProfile = linkedinProfile;
+        if(yearsOfExperience) user.profile.yearsOfExperience = Number(yearsOfExperience);
+        if(companyName) user.profile.companyName = companyName;
+        
+        if(experiences) {
+            try {
+                 user.profile.experiences = typeof experiences === 'string' ? JSON.parse(experiences) : experiences;
+            } catch (e) {
+                console.error("Error parsing experiences:", e);
+            }
+        }
+
+        await user.save();
+
+        user = await User.findById(userId); // Fetch updated user to return
+
+        return res.status(200).json({
+            message: 'Profile updated successfully',
+            success: true,
+            user
         });
-     }
-     user.fullname= fullname || user.fullname;
-     user.email= email || user.email;
-     user.phoneNumber= phoneNumber || user.phoneNumber;
-     user.profile.bio= bio || user.profile.bio;
-     user.profile.skills= skillsArray || user.profile.skills;
-     user.profile.resume= resume || user.profile.resume;
-     user.profile.resumeOriginalName= resumeOriginalName || user.profile.resumeOriginalName;
-     user.profile.companyName= companyName || user.profile.companyName;
-     user.profile.profilePhoto= profilePhoto || user.profile.profilePhoto;
-     await user.save();
-     return res.status(200).json({message: 'Profile updated successfully', success: true
-     });
-    } catch(error){
-        return res.status(500).json({message: error.message, success: false
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: error.message, success: false
         });
     }
 }

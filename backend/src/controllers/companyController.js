@@ -1,10 +1,21 @@
 import { Company } from '../models/Company.js';
+import getDataUri from "../utils/datauri.js";
+import cloudinary from "../utils/cloudinary.js";
 
 export const registerCompany = async (req, res) => {
     try {
-        const { name, description, email, phoneNumber, address, logo } = req.body;
+        const { name, description, email, phoneNumber, address } = req.body;
+        
+        // Handle file upload if present
+        let logo = req.body.logo;
+        if (req.file) {
+            const fileUri = getDataUri(req.file);
+            const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+            logo = cloudResponse.secure_url;
+        }
+
         // Check if all required fields are provided
-        if (!name || !description || !email || !phoneNumber || !address || !logo) {
+        if (!name || !description || !email || !phoneNumber || !address) {
             return res.status(400).json({ message: 'Please provide all required fields', success: false });
         }
         const userId = req.id;
@@ -13,7 +24,7 @@ export const registerCompany = async (req, res) => {
             $or: [{name}, { email }, { phoneNumber }],
         });
         if (existingCompany) {
-            return res.status(400).json({ message: 'Company with the same name oremail or phone number already exists', success: false });
+            return res.status(400).json({ message: 'Company with the same name or email or phone number already exists', success: false });
         }
         let company = await Company.create({
             name,
@@ -26,6 +37,7 @@ export const registerCompany = async (req, res) => {
         });
         return res.status(201).json({ message: 'Company registered successfully',success: true, company });
     } catch (error) {
+        console.log(error);
         return res.status(500).json({ message: 'Internal server error', success: false });
     }
 }

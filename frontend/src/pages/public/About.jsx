@@ -1,7 +1,7 @@
 import React from 'react';
 import { FiUsers, FiAward, FiGlobe } from 'react-icons/fi';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import Navbar from '../../components/Navbar';
+import Footer from '../../components/Footer';
 
 const About = () => {
   return (

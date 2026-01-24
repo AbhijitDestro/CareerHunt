@@ -1,18 +1,37 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FiUsers, FiBriefcase, FiPlus, FiMoreHorizontal } from 'react-icons/fi';
+import axios from 'axios';
+import { JOB_API_END_POINT } from '../../utils/constant';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const RecruiterDashboard = ({ user }) => {
-    // Mock Data
-    const stats = [
-        { label: 'Active Jobs', value: '4', icon: FiBriefcase, color: 'text-purple-400', bg: 'bg-purple-500/10' },
-        { label: 'Total Applicants', value: '148', icon: FiUsers, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-        { label: 'Shortlisted', value: '24', icon: FiUsers, color: 'text-green-400', bg: 'bg-green-500/10' },
-    ];
+    const [jobs, setJobs] = useState([]);
+    const navigate = useNavigate();
 
-    const activeJobs = [
-        { id: 1, title: 'Senior Product Designer', applicants: 45, status: 'Active', posted: '2d ago' },
-        { id: 2, title: 'Frontend Developer', applicants: 32, status: 'Active', posted: '5d ago' },
-        { id: 3, title: 'Marketing Intern', applicants: 71, status: 'Closing Soon', posted: '1w ago' },
+    useEffect(() => {
+        const fetchJobs = async () => {
+             try {
+                // We use user._id for the param, though controller uses req.id from token
+                const res = await axios.get(`${JOB_API_END_POINT}/get/user/${user?._id}`, { withCredentials: true });
+                if(res.data.success){
+                    setJobs(res.data.jobs);
+                }
+             } catch (error) {
+                 console.log(error);
+             }
+        }
+        if(user) fetchJobs();
+    }, [user]);
+
+    // Calculate stats
+    const totalApplicants = jobs.reduce((acc, job) => acc + (job.applications?.length || 0), 0);
+    const activeJobsCount = jobs.length; // Assuming all returned are active for now, or filter by status if available
+    const stats = [
+        { label: 'Active Jobs', value: activeJobsCount, icon: FiBriefcase, color: 'text-purple-400', bg: 'bg-purple-500/10' },
+        { label: 'Total Applicants', value: totalApplicants, icon: FiUsers, color: 'text-blue-400', bg: 'bg-blue-500/10' },
+        // Shortlisted count would require fetching application statuses, skip for now or make 0
+        { label: 'Shortlisted', value: '0', icon: FiUsers, color: 'text-green-400', bg: 'bg-green-500/10' },
     ];
 
     return (
@@ -23,9 +42,14 @@ const RecruiterDashboard = ({ user }) => {
                 <div className="relative z-10">
                     <h2 className="text-2xl font-bold text-white mb-2">Post a new job opportunity</h2>
                     <p className="text-purple-100 mb-6 max-w-lg">Find the best talent for your company with our AI-powered matching system.</p>
-                    <button className="px-6 py-3 bg-white text-purple-900 rounded-xl font-bold flex items-center gap-2 hover:bg-gray-50 transition-colors">
-                        <FiPlus /> Post New Job
-                    </button>
+                    <div className="flex gap-4">
+                        <button onClick={() => navigate('/admin/companies')} className="px-6 py-3 bg-white/10 text-white rounded-xl font-bold flex items-center gap-2 hover:bg-white/20 transition-colors">
+                            <FiBriefcase /> My Companies
+                        </button>
+                        <button onClick={() => navigate('/admin/jobs/create')} className="px-6 py-3 bg-white text-purple-900 rounded-xl font-bold flex items-center gap-2 hover:bg-gray-50 transition-colors">
+                            <FiPlus /> Post New Job
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -59,28 +83,41 @@ const RecruiterDashboard = ({ user }) => {
                                 <th className="pb-4">Applicants</th>
                                 <th className="pb-4">Posted</th>
                                 <th className="pb-4">Status</th>
-                                <th className="pb-4"></th>
+                                <th className="pb-4 text-right">Action</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
-                            {activeJobs.map(job => (
-                                <tr key={job.id} className="group hover:bg-white/5 transition-colors">
+                            {jobs.map(job => (
+                                <tr key={job._id} className="group hover:bg-white/5 transition-colors">
                                     <td className="py-4 font-medium text-white pl-2">{job.title}</td>
                                     <td className="py-4 flex items-center gap-2">
                                         <div className="flex -space-x-2">
-                                            {[1,2,3].map(i => <div key={i} className="w-6 h-6 rounded-full bg-gray-600 border border-[#0d0d12]"></div>)}
+                                             {/* Placeholder avatars if needed, otherwise just count */}
                                         </div>
-                                        <span className="ml-2">+{job.applicants - 3}</span>
+                                        <span onClick={() => navigate(`/admin/jobs/${job._id}/applicants`)} className="ml-2 cursor-pointer text-blue-400 hover:text-blue-300">
+                                            {job.applications?.length || 0} Applicants
+                                        </span>
                                     </td>
-                                    <td className="py-4">{job.posted}</td>
-                                    <td className="py-4"><span className="px-2 py-1 rounded bg-green-500/10 text-green-400 text-xs">{job.status}</span></td>
-                                    <td className="py-4 text-right pr-2">
-                                        <button className="text-gray-500 hover:text-white"><FiMoreHorizontal size={20}/></button>
+                                    <td className="py-4">{new Date(job.createdAt).toLocaleDateString()}</td>
+                                    <td className="py-4"><span className="px-2 py-1 rounded bg-green-500/10 text-green-400 text-xs">Active</span></td>
+                                    <td className="py-4 text-right pr-2 space-x-2">
+                                        <button onClick={() => navigate(`/admin/jobs/${job._id}/edit`)} className="text-gray-400 hover:text-white" title="Edit Job">
+                                            <FiMoreHorizontal size={18} />
+                                        </button>
+                                        <button onClick={() => navigate(`/admin/jobs/${job._id}/applicants`)} className="text-white bg-purple-600 px-3 py-1 rounded hover:bg-purple-700 text-sm">
+                                            Applicants
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
+                     {jobs.length === 0 && (
+                        <div className="text-center py-12">
+                            <p className="text-gray-400 mb-4">No jobs posted yet.</p>
+                            <button onClick={() => navigate('/admin/jobs/create')} className="text-purple-400 hover:text-purple-300 font-medium">Post your first job</button>
+                        </div>
+                     )}
                 </div>
              </div>
         </div>

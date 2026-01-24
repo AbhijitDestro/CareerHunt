@@ -36,32 +36,52 @@ export const postJob = async(req,res)=>{
     }
 }
 
+
+
 export const getAllJobs = async(req,res)=>{
     try{
         const keyword = req.query.keyword || '';
+        const location = req.query.location || '';
+        const jobType = req.query.jobType || '';
+        const companyKeyword = req.query.company || '';
+        const minSalary = req.query.minSalary;
+        const maxSalary = req.query.maxSalary;
+        
         let query = {};
         
         if (keyword) {
-            query = {
-                $or: [
-                    { title: { $regex: keyword, $options: 'i' } },
-                    { location: { $regex: keyword, $options: 'i' } },
-                    { jobType: { $regex: keyword, $options: 'i' } },
-                    { experienceLevel: { $regex: keyword, $options: 'i' } }
-                ]
-            };
+            query.$or = [
+                { title: { $regex: keyword, $options: 'i' } },
+                { description: { $regex: keyword, $options: 'i' } },
+            ];
+        }
+
+        if (location) {
+            query.location = { $regex: location, $options: 'i' };
+        }
+
+        if (jobType && jobType !== 'all') {
+            query.jobType = { $regex: jobType, $options: 'i' };
+        }
+
+        if(companyKeyword) {
+            const companies = await Company.find({ name: { $regex: companyKeyword, $options: 'i' } }, '_id');
+            const companyIds = companies.map(c => c._id);
+            query.company = { $in: companyIds };
+        }
+
+        if(minSalary || maxSalary) {
+            query.salary = {};
+            if(minSalary) query.salary.$gte = Number(minSalary);
+            if(maxSalary) query.salary.$lte = Number(maxSalary);
         }
         
-        const jobs = await Job.find(query).populate('created_by', 'name email').populate('company', 'name');
-        if(jobs.length === 0){
-            return res.status(404).json({message: 'No jobs found', success: false
-            });
-        }
-        return res.status(200).json({jobs, success: true
-        });
+        const jobs = await Job.find(query).populate('created_by', 'name email').populate('company', 'name logo location').sort({createdAt: -1});
+        
+        return res.status(200).json({jobs, success: true});
     }catch(error){
-        return res.status(500).json({message: error.message, success: false
-        });
+        console.log(error);
+        return res.status(500).json({message: error.message, success: false});
     }
 }
 

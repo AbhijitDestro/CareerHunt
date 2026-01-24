@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { USER_API_END_POINT } from '../../utils/constant';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Loader2 } from 'lucide-react';
+import { Loader2, X} from 'lucide-react';
 
 const SignIn = () => {
     const [loading, setLoading] = useState(false);
@@ -62,7 +62,16 @@ const SignIn = () => {
     }
 
     return (
-        <div className="min-h-screen w-full bg-[#050505] flex items-center justify-center p-4 font-sans text-white">
+        <div className="min-h-screen w-full bg-[#050505] flex items-center justify-center p-4 font-sans text-white relative">
+             {/* Close button */}
+            <button
+                onClick={() => navigate('/')}
+                className="absolute top-6 right-6 w-14 h-14 cursor-pointer bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors z-50"
+                aria-label="Close and return to home"
+            >
+                <X className="w-8 h-8" />
+            </button>
+
             <div className="w-full max-w-[1400px] grid grid-cols-1 lg:grid-cols-2 gap-4 h-full lg:h-[90vh]">
                
                 {/* Left Panel - Hero/Stepper */}
@@ -74,9 +83,7 @@ const SignIn = () => {
                      <div className="relative z-10">
                          {/* Logo */}
                          <div className="flex items-center gap-2 mb-20">
-                             <div className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center">
-                                 <div className="w-3 h-3 bg-white rounded-full"></div>
-                             </div>
+                              <img src="/logo.png" alt="CareerHunt Logo" className="w-10 h-10" />
                              <span className="text-2xl font-bold">CareerHunt</span>
                          </div>
 
@@ -113,7 +120,7 @@ const SignIn = () => {
                                 <button
                                     type="button"
                                     onClick={() => handleRoleChange('candidate')}
-                                    className={`p-4 rounded-xl border-2 transition-all duration-200 ${
+                                    className={`p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer ${
                                         selectedRole === 'candidate'
                                             ? 'border-blue-500 bg-blue-500/20 text-white'
                                             : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20'
@@ -128,7 +135,7 @@ const SignIn = () => {
                                 <button
                                     type="button"
                                     onClick={() => handleRoleChange('recruiter')}
-                                    className={`p-4 rounded-xl border-2 transition-all duration-200 ${
+                                    className={`p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer ${
                                         selectedRole === 'recruiter'
                                             ? 'border-blue-500 bg-blue-500/20 text-white'
                                             : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20'
@@ -145,7 +152,7 @@ const SignIn = () => {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-xs font-semibold text-gray-400 ml-1">Email</label>
+                            <label className="text-sm font-semibold text-gray-400 ml-1">Email</label>
                             <input
                                 type="email"
                                 placeholder="eg. johnfrans@gmail.com"
@@ -158,7 +165,7 @@ const SignIn = () => {
 
                         <div className="space-y-2">
                             <div className="flex justify-between items-center ml-1">
-                                <label className="text-xs font-semibold text-gray-400">Password</label>
+                                <label className="text-sm font-semibold text-gray-400">Password</label>
                                 <a href="#" className="text-xs text-blue-400 hover:text-blue-300">Forgot Password?</a>
                             </div>
                             <input
@@ -174,14 +181,14 @@ const SignIn = () => {
                             loading ? <button className="w-full bg-white text-black font-bold py-4 rounded-xl hover:bg-gray-200 transition-colors mt-4 flex items-center justify-center"><Loader2 className="animate-spin"/> Please Wait </button> :
                         <button
                             type="submit"
-                            className="w-full bg-white text-black font-bold py-4 rounded-xl hover:bg-gray-200 transition-colors mt-4"
+                            className="w-full bg-white text-black font-bold py-4 rounded-xl hover:bg-gray-200 transition-colors mt-4 cursor-pointer"
                         >
                             Log In
                         </button>
                          }
 
                         <p className="text-center text-sm text-gray-400">
-                            Don't have an account? <Link to="/signup" className="text-white font-semibold hover:underline">Sign up</Link>
+                            Don't have an account? <Link to="/signup" className="text-white font-semibold hover:underline cursor-pointer">Sign up</Link>
                         </p>
                     </form>
                 </div>
