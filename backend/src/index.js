@@ -7,6 +7,8 @@ import userRoutes from './routes/userRoutes.js';
 import companyRoutes from './routes/companyRoutes.js';
 import jobRoutes from './routes/jobRoutes.js';
 import applicationRoutes from './routes/applicationRoutes.js';
+import publicJobRoutes from './routes/publicJobRoutes.js';
+import publicCompanyRoutes from './routes/publicCompanyRoutes.js';
 
 dotenv.config();
 connectDB();
@@ -41,6 +43,10 @@ app.use('/api/user', userRoutes);
 app.use('/api/company', companyRoutes);
 app.use('/api/job', jobRoutes);
 app.use('/api/application', applicationRoutes);
+
+// Public APIs (no authentication required)
+app.use('/api/public/job', publicJobRoutes);
+app.use('/api/public/company', publicCompanyRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

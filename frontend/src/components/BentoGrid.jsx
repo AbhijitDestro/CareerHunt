@@ -12,7 +12,7 @@ const BentoGrid = () => {
 
             <div className="max-w-7xl mx-auto">
                 <div className="text-center mb-16">
-                    <span className="text-purple-400 text-sm font-semibold tracking-widest uppercase mb-2 block">Why Choose CareerHunt</span>
+                    <span className="text-blue-400 text-sm font-semibold tracking-widest uppercase mb-2 block">Why Choose CareerHunt</span>
                     <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Features that set us apart</h2>
                     <p className="text-gray-400 max-w-2xl mx-auto">
                         We leverage cutting-edge technology to make your job search faster, smarter, and more effective.

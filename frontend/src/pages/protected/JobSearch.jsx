@@ -5,11 +5,12 @@ import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import axios from 'axios';
 import { JOB_API_END_POINT } from '../../utils/constant';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const JobSearch = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const locationObj = useLocation();
   const [searchTerm, setSearchTerm] = useState('');
   const [location, setLocation] = useState('');
   const [company, setCompany] = useState('');
@@ -17,22 +18,47 @@ const JobSearch = () => {
   const [salaryRange, setSalaryRange] = useState('all');
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
+
+  // Read URL parameters on component mount
+  useEffect(() => {
+    const searchParams = new URLSearchParams(locationObj.search);
+    const urlKeyword = searchParams.get('keyword') || '';
+    const urlLocation = searchParams.get('location') || '';
+    
+    if (urlKeyword) {
+      setSearchTerm(urlKeyword);
+      setHasSearched(true);
+    }
+    if (urlLocation) {
+      setLocation(urlLocation);
+      setHasSearched(true);
+    }
+  }, [locationObj.search]);
 
   const fetchJobs = async () => {
       setLoading(true);
       try {
-          let query = `?keyword=${searchTerm}&location=${location}`;
-          if(jobType !== 'all') query += `&jobType=${jobType}`;
-          if(company) query += `&company=${company}`;
+          let query = '';
           
-          if(salaryRange !== 'all') {
-              if(salaryRange === '25+') {
-                  query += `&minSalary=25`;
-              } else {
-                  const [min, max] = salaryRange.split('-');
-                  if(min) query += `&minSalary=${min}`;
-                  if(max) query += `&maxSalary=${max}`;
+          // Only apply filters if user has actively searched
+          if (hasSearched) {
+              query = `?keyword=${searchTerm}&location=${location}`;
+              if(jobType !== 'all') query += `&jobType=${jobType}`;
+              if(company) query += `&company=${company}`;
+              
+              if(salaryRange !== 'all') {
+                  if(salaryRange === '25+') {
+                      query += `&minSalary=25`;
+                  } else {
+                      const [min, max] = salaryRange.split('-');
+                      if(min) query += `&minSalary=${min}`;
+                      if(max) query += `&maxSalary=${max}`;
+                  }
               }
+          } else {
+              // Show all jobs by default
+              query = '?keyword=&location=';
           }
           
           const res = await axios.get(`${JOB_API_END_POINT}/get${query}`, { withCredentials: true });
@@ -49,10 +75,19 @@ const JobSearch = () => {
 
   useEffect(() => {
     fetchJobs();
+  }, [hasSearched]);
+
+  // Initial load - fetch all jobs
+  useEffect(() => {
+    // Only fetch all jobs on initial load, not when coming from Hero search
+    if (!hasSearched && !locationObj.search) {
+      fetchJobs();
+    }
   }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
+    setHasSearched(true);
     fetchJobs();
   };
 
@@ -193,7 +228,11 @@ const JobSearch = () => {
               </svg>
             </div>
             <h3 className="text-lg font-medium text-white mb-2">No jobs found</h3>
-            <p className="text-gray-400 mb-4">Try adjusting your search criteria</p>
+            <p className="text-gray-400 mb-4">
+              {hasSearched 
+                ? "Try adjusting your search criteria or browse all available jobs" 
+                : "No jobs available at the moment. Please check back later!"}
+            </p>
           </div>
         )}
     </div>

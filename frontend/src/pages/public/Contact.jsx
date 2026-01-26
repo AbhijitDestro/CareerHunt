@@ -21,18 +21,18 @@ const Contact = () => {
             <div className="space-y-8">
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center shrink-0">
-                  <FiMail className="text-xl text-[#6C2BD9]" />
+                  <FiMail className="text-xl text-[#0b71f7]" />
                 </div>
                 <div>
                   <h3 className="font-bold text-lg mb-1">Email</h3>
-                  <p className="text-gray-400">support@joboost.com</p>
-                  <p className="text-gray-400">sales@joboost.com</p>
+                  <p className="text-gray-400">support@careerhunt.com</p>
+                  <p className="text-gray-400">sales@careerhunt.com</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center shrink-0">
-                  <FiMapPin className="text-xl text-[#6C2BD9]" />
+                  <FiMapPin className="text-xl text-[#0b71f7]" />
                 </div>
                 <div>
                   <h3 className="font-bold text-lg mb-1">Office</h3>
@@ -43,7 +43,7 @@ const Contact = () => {
 
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center shrink-0">
-                  <FiPhone className="text-xl text-[#6C2BD9]" />
+                  <FiPhone className="text-xl text-[#0b71f7]" />
                 </div>
                 <div>
                   <h3 className="font-bold text-lg mb-1">Phone</h3>
@@ -79,7 +79,7 @@ const Contact = () => {
                 <textarea rows="4" className="w-full bg-[#0d0d12] border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-[#6C2BD9] transition-colors resize-none" placeholder="Tell us how we can help..."></textarea>
               </div>
 
-              <button type="button" className="w-full bg-[#6C2BD9] hover:bg-[#5b23b5] text-white font-bold py-4 rounded-xl transition-all duration-300 shadow-lg shadow-purple-900/20">
+              <button type="button" className="w-full bg-[#0b71f7] hover:bg-[#1f4980] text-white font-bold py-4 rounded-xl transition-all duration-200 shadow-lg shadow-purple-900/20">
                 Send Message
               </button>
             </form>

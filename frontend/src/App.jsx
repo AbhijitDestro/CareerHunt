@@ -3,6 +3,7 @@ import { Toaster } from './components/ui/sonner'
 import Home from './pages/public/Home'
 import About from './pages/public/About'
 import Contact from './pages/public/Contact'
+import ForEmployer from './pages/public/ForEmployer'
 import SignUp from './pages/auth/SignUp'
 import SignIn from './pages/auth/SignIn'
 import Dashboard from './pages/protected/Dashboard'
@@ -10,6 +11,8 @@ import Profile from './pages/protected/Profile'
 import JobDetails from './pages/JobDetails'
 import Settings from './pages/protected/Settings'
 import JobSearch from './pages/protected/JobSearch'
+import PublicJobSearch from './pages/public/JobSearch'
+import PublicCompanies from './pages/public/Companies'
 import Notifications from './pages/protected/Notifications'
 import AppliedJobs from './pages/protected/AppliedJobs'
 import Applicants from './pages/protected/Applicants'
@@ -28,9 +31,11 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/for-employer" element={<ForEmployer />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
-        <Route path="/job-search" element={<JobSearch />} />
+        <Route path="/job-search" element={<PublicJobSearch />} />
+        <Route path="/companies" element={<PublicCompanies />} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />

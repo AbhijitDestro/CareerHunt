@@ -55,6 +55,18 @@ export const getCompany = async (req,res) =>{
     }
 }
 
+export const getAllCompanies = async (req,res) =>{
+    try{
+        const companies=await Company.find({});
+        if(!companies || companies.length === 0){
+            return res.status(404).json({message: 'No companies found', success: false});
+        }
+        return res.status(200).json({message: 'Companies found', success: true, companies});
+    } catch (error) {
+        return res.status(500).json({ message: 'Internal server error', success: false });
+    }
+}
+
 export const getCompanyById= async(req,res) =>{
     try{
         const companyId= req.params.id;

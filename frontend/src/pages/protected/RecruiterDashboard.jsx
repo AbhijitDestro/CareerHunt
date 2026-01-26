@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { FiUsers, FiBriefcase, FiPlus, FiMoreHorizontal } from 'react-icons/fi';
 import axios from 'axios';
-import { JOB_API_END_POINT } from '../../utils/constant';
+import { JOB_API_END_POINT, COMPANY_API_END_POINT } from '../../utils/constant';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 const RecruiterDashboard = ({ user }) => {
     const [jobs, setJobs] = useState([]);
+    const [companies, setCompanies] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -21,7 +22,22 @@ const RecruiterDashboard = ({ user }) => {
                  console.log(error);
              }
         }
-        if(user) fetchJobs();
+        
+        const fetchCompanies = async () => {
+            try {
+                const res = await axios.get(`${COMPANY_API_END_POINT}/get`, { withCredentials: true });
+                if(res.data.success){
+                    setCompanies(res.data.companies);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        
+        if(user) {
+            fetchJobs();
+            fetchCompanies();
+        }
     }, [user]);
 
     // Calculate stats
@@ -118,6 +134,42 @@ const RecruiterDashboard = ({ user }) => {
                             <button onClick={() => navigate('/admin/jobs/create')} className="text-purple-400 hover:text-purple-300 font-medium">Post your first job</button>
                         </div>
                      )}
+
+            {/* Companies Section */}
+            <div className="bg-white/5 backdrop-blur-md rounded-3xl p-8 border border-white/5">
+                <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-xl font-bold text-white">My Companies</h3>
+                    <button onClick={() => navigate('/admin/companies')} className="text-purple-400 text-sm hover:text-purple-300">View All</button>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {companies.slice(0, 3).map(company => (
+                        <div key={company._id} className="bg-white/5 rounded-2xl p-4 border border-white/10 hover:border-purple-500/30 transition-colors cursor-pointer" onClick={() => navigate(`/admin/companies/${company._id}`)}>
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center overflow-hidden">
+                                    {company.logo ? (
+                                        <img src={company.logo} alt={company.name} className="w-full h-full object-cover"/>
+                                    ) : (
+                                        <span className="text-lg font-bold text-gray-400">{company.name[0]}</span>
+                                    )}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <h4 className="font-semibold text-white truncate">{company.name}</h4>
+                                    <p className="text-gray-400 text-xs">{company.email}</p>
+                                </div>
+                            </div>
+                            <p className="text-gray-300 text-sm line-clamp-2">{company.description}</p>
+                        </div>
+                    ))}
+                </div>
+                
+                {companies.length === 0 && (
+                    <div className="text-center py-8">
+                        <p className="text-gray-400 mb-4">You haven't registered any companies yet.</p>
+                        <button onClick={() => navigate('/admin/companies/create')} className="text-purple-400 hover:text-purple-300 font-medium">Register your first company</button>
+                    </div>
+                )}
+            </div>
                 </div>
              </div>
         </div>

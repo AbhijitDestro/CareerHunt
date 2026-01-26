@@ -4,7 +4,7 @@ import { FiArrowLeft, FiClock, FiDollarSign, FiMapPin, FiBriefcase, FiCheck } fr
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import axios from 'axios';
-import { APPLICATION_API_END_POINT, JOB_API_END_POINT } from '../utils/constant';
+import { APPLICATION_API_END_POINT, PUBLIC_JOB_API_END_POINT } from '../utils/constant';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
 
@@ -19,7 +19,7 @@ const JobDetails = () => {
     useEffect(() => {
         const fetchJob = async () => {
             try {
-                const res = await axios.get(`${JOB_API_END_POINT}/get/${id}`, { withCredentials: true });
+                const res = await axios.get(`${PUBLIC_JOB_API_END_POINT}/get/${id}`);
                 if(res.data.success){
                     setJob(res.data.job);
                     // Check if already applied. Since the backend might not return this status directly for public endpoint,

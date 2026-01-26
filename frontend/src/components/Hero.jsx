@@ -1,19 +1,35 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { FiSearch, FiMapPin, FiUser, FiTrendingUp } from 'react-icons/fi';
 import { GoArrowUpRight } from "react-icons/go";
+import { useNavigate } from 'react-router-dom';
 
 const Hero = () => {
+  const navigate = useNavigate();
   const containerRef = useRef(null);
   const titleRef = useRef(null);
   const searchBarRef = useRef(null);
   const cardsRef = useRef(null);
   const starRefs = useRef([]);
+  const [jobTitle, setJobTitle] = useState('');
+  const [location, setLocation] = useState('');
 
   const addToRefs = (el) => {
     if (el && !starRefs.current.includes(el)) {
       starRefs.current.push(el);
     }
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    
+    // Build query parameters
+    const params = new URLSearchParams();
+    if (jobTitle.trim()) params.append('keyword', jobTitle.trim());
+    if (location.trim()) params.append('location', location.trim());
+    
+    // Navigate to job search page with query parameters
+    navigate(`/job-search?${params.toString()}`);
   };
 
   useEffect(() => {
@@ -83,7 +99,7 @@ const Hero = () => {
             Unlock Your <br />
             <span className="flex items-center justify-center gap-4 flex-wrap">
               Career
-              <span className="inline-flex items-center justify-center gap-2 px-8 py-2 bg-gradient-to-r from-purple-400 to-blue-400 rounded-full text-black transform -rotate-3 shadow-lg">
+              <span className="inline-flex items-center justify-center gap-2 px-8 py-2 bg-gradient-to-r from-blue-300 to-blue-700 rounded-full text-black transform -rotate-3 shadow-lg">
                 <GoArrowUpRight className="text-xl" />
                 <GoArrowUpRight className="text-xl rotate-90" />
                 <GoArrowUpRight className="text-xl" />
@@ -95,31 +111,38 @@ const Hero = () => {
         </div>
 
         {/* Search Bar */}
-        <div ref={searchBarRef} className="w-full max-w-3xl bg-white rounded-full p-2 flex flex-col md:flex-row items-center shadow-2xl mb-24">
-          <div className="flex-1 flex items-center px-4 w-full md:w-auto mb-2 md:mb-0">
-            <FiSearch className="text-gray-400 text-2xl mr-2" />
+        <form ref={searchBarRef} onSubmit={handleSearch} className="w-full max-w-3xl bg-white rounded-2xl md:rounded-full p-3 md:p-2 flex flex-col md:flex-row items-stretch md:items-center shadow-2xl mb-24">
+          <div className="flex-1 flex items-center px-4 py-3 md:py-0 w-full md:w-auto mb-2 md:mb-0">
+            <FiSearch className="text-gray-400 text-2xl mr-2 flex-shrink-0" />
             <input
               type="text"
               placeholder="Job title or Keyword"
-              className="w-full bg-transparent outline-none text-gray-800 placeholder-gray-500 py-3"
+              value={jobTitle}
+              onChange={(e) => setJobTitle(e.target.value)}
+              className="w-full bg-transparent outline-none text-gray-800 placeholder-gray-500 py-1 md:py-3 min-w-0"
             />
           </div>
          
           <div className="hidden md:block w-px h-8 bg-gray-300 mx-2"></div>
          
-          <div className="flex-1 flex items-center px-4 w-full md:w-auto mb-2 md:mb-0">
-            <FiMapPin className="text-gray-400 text-xl mr-2" />
+          <div className="flex-1 flex items-center px-4 py-3 md:py-0 w-full md:w-auto mb-2 md:mb-0">
+            <FiMapPin className="text-gray-400 text-xl mr-2 flex-shrink-0" />
             <input
               type="text"
               placeholder="Location"
-              className="w-full bg-transparent outline-none text-gray-800 placeholder-gray-500 py-3"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="w-full bg-transparent outline-none text-gray-800 placeholder-gray-500 py-1 md:py-3 min-w-0"
             />
           </div>
 
-          <button className="w-full md:w-auto bg-[#6C2BD9] hover:bg-[#5b23b5] text-white px-8 py-3 rounded-full font-medium transition-colors duration-300 shadow-md">
+          <button 
+            type="submit"
+            className="w-full md:w-auto bg-blue-400 hover:bg-blue-600 text-white px-6 md:px-8 py-3 rounded-xl md:rounded-full font-medium transition-colors duration-300 shadow-md cursor-pointer flex-shrink-0"
+          >
             Search
           </button>
-        </div>
+        </form>
 
         {/* How It Works Section */}
         <div ref={cardsRef} className="w-full bg-white/5 backdrop-blur-md rounded-3xl p-8 md:p-12 border border-white/5 text-left relative overflow-hidden">

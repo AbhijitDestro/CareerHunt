@@ -23,8 +23,8 @@ const Marquee = () => {
         <div className="py-2 animate-marquee whitespace-nowrap flex items-center gap-16 pr-16">
           {companies.map((Company, idx) => (
             <div key={idx} className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors duration-300 cursor-pointer">
-              <Company.icon className="text-3xl" />
-              <span className="text-xl font-bold">{Company.name}</span>
+              <Company.icon className="text-4xl" />
+              <span className="text-2xl font-bold">{Company.name}</span>
             </div>
           ))}
           {/* Duplicate for seamless loop */}

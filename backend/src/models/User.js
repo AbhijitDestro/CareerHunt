@@ -14,9 +14,9 @@ const userSchema = new mongoose.Schema({
         minLength: [8, 'Email must be at least 8 characters long'],
     },
     phoneNumber: {
-        type: Number,
+        type: String,
         sparse: true,
-        validate: { validator: v => v === null || /^[0-9]{10}$/.test(v), message: 'Please use a valid phone number' },
+        validate: { validator: v => v === null || v === '' || /^[0-9]{10}$/.test(v), message: 'Please use a valid phone number' },
         trim: true,
         default: null,
     },

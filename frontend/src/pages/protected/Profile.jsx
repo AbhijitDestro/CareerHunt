@@ -2,13 +2,18 @@ import React, { useState, useEffect } from 'react';
 import AppSidebar from '../../components/AppSidebar';
 import Footer from '../../components/Footer';
 import { useAuth } from '../../context/AuthContext';
-import { FiEdit2, FiMail, FiPhone, FiMapPin, FiLinkedin, FiUpload, FiX, FiCheck, FiFileText, FiBriefcase } from 'react-icons/fi';
+import { FiEdit2, FiMail, FiPhone, FiMapPin, FiLinkedin, FiUpload, FiX, FiCheck, FiFileText, FiBriefcase, FiGlobe } from 'react-icons/fi';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { COMPANY_API_END_POINT } from '../../utils/constant';
 
 const Profile = () => {
     const { user, updateProfile } = useAuth();
     const isRecruiter = user?.role === 'recruiter';
+    const [companies, setCompanies] = useState([]);
+    const navigate = useNavigate();
     
     const [profileData, setProfileData] = useState({
         bio: "",
@@ -52,6 +57,25 @@ const Profile = () => {
                 experiences: user.profile?.experiences || [],
             });
             if(user.profile?.resumeOriginalName) setResumeFileName(user.profile.resumeOriginalName);
+        }
+    }, [user]);
+
+    useEffect(() => {
+        const fetchCompanies = async () => {
+            if (user?.role === 'recruiter') {
+                try {
+                    const res = await axios.get(`${COMPANY_API_END_POINT}/get`, { withCredentials: true });
+                    if(res.data.success){
+                        setCompanies(res.data.companies);
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        };
+        
+        if (user) {
+            fetchCompanies();
         }
     }, [user]);
 
@@ -118,10 +142,16 @@ const Profile = () => {
                                         <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-gray-400"><FiMapPin /></div>
                                         <span>{profileData.location || "Not set"}</span>
                                     </div>
-                                    {!isRecruiter && profileData.linkedinProfile && (
+                                    {profileData.linkedinProfile && (
                                          <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-gray-400"><FiLinkedin /></div>
-                                            <a href={profileData.linkedinProfile} target="_blank" rel="noopener noreferrer" className="truncate hover:text-blue-400">LinkedIn</a>
+                                            <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-blue-400"><FiLinkedin /></div>
+                                            <a href={profileData.linkedinProfile} target="_blank" rel="noopener noreferrer" className="truncate hover:text-blue-400 text-blue-400">LinkedIn Profile</a>
+                                        </div>
+                                    )}
+                                    {profileData.website && (
+                                         <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-green-400"><FiGlobe /></div>
+                                            <a href={profileData.website} target="_blank" rel="noopener noreferrer" className="truncate hover:text-green-400 text-green-400">Website</a>
                                         </div>
                                     )}
                                      {!isRecruiter && profileData.resume && (
@@ -185,8 +215,63 @@ const Profile = () => {
                         )}
                         
                         {isRecruiter && (
-                            <div className="md:col-span-2 flex items-center justify-center p-8 bg-white/5 backdrop-blur-md rounded-3xl border border-white/5">
-                                <p className="text-gray-400">Manage your companies and jobs from the dashboard sidebar.</p>
+                            <div className="md:col-span-2 space-y-6">
+                                {/* Social Links */}
+                                {(profileData.linkedinProfile || profileData.website) && (
+                                    <div className="bg-white/5 backdrop-blur-md rounded-3xl p-6 border border-white/5">
+                                        <h3 className="font-bold text-lg mb-4">Social Links</h3>
+                                        <div className="space-y-3">
+                                            {profileData.linkedinProfile && (
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-blue-400"><FiLinkedin /></div>
+                                                    <a href={profileData.linkedinProfile} target="_blank" rel="noopener noreferrer" className="truncate hover:text-blue-400 text-blue-400">LinkedIn Profile</a>
+                                                </div>
+                                            )}
+                                            {profileData.website && (
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-green-400"><FiGlobe /></div>
+                                                    <a href={profileData.website} target="_blank" rel="noopener noreferrer" className="truncate hover:text-green-400 text-green-400">Website</a>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                                
+                                {/* Companies Section */}
+                                <div className="bg-white/5 backdrop-blur-md rounded-3xl p-8 border border-white/5">
+                                    <div className="flex justify-between items-center mb-6">
+                                        <h3 className="font-bold text-xl">My Companies</h3>
+                                        <button onClick={() => navigate('/admin/companies')} className="text-purple-400 text-sm hover:text-purple-300">View All</button>
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {companies.slice(0, 4).map(company => (
+                                            <div key={company._id} className="bg-white/5 rounded-2xl p-4 border border-white/10 hover:border-purple-500/30 transition-colors cursor-pointer" onClick={() => navigate(`/admin/companies/${company._id}`)}>
+                                                <div className="flex items-center gap-3 mb-3">
+                                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center overflow-hidden">
+                                                        {company.logo ? (
+                                                            <img src={company.logo} alt={company.name} className="w-full h-full object-cover"/>
+                                                        ) : (
+                                                            <span className="text-lg font-bold text-gray-400">{company.name[0]}</span>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <h4 className="font-semibold text-white truncate">{company.name}</h4>
+                                                        <p className="text-gray-400 text-xs">{company.email}</p>
+                                                    </div>
+                                                </div>
+                                                <p className="text-gray-300 text-sm line-clamp-2">{company.description}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    
+                                    {companies.length === 0 && (
+                                        <div className="text-center py-8">
+                                            <p className="text-gray-400 mb-4">You haven't registered any companies yet.</p>
+                                            <button onClick={() => navigate('/admin/companies/create')} className="text-purple-400 hover:text-purple-300 font-medium">Register your first company</button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         )}
                     </div>

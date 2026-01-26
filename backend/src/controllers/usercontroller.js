@@ -26,7 +26,7 @@ export const register = async(req,res)=>{
         const newUser= new User({
             email,
             fullname,
-            phoneNumber: null,
+            phoneNumber: '',
             password: hashedPassword,
             role,
         });
@@ -125,9 +125,15 @@ export const updateProfile = async (req, res) => {
         if(fullname) user.fullname = fullname;
         if(email) user.email = email;
         
-        // Handle phone number specifically to avoid casting empty string to 0 or null errors
-        if(phoneNumber && phoneNumber !== "null" && phoneNumber !== "undefined" && phoneNumber.trim() !== "") {
-             user.phoneNumber = Number(phoneNumber);
+        // Handle phone number - store as string for better formatting
+        if(phoneNumber !== undefined && phoneNumber !== null && phoneNumber !== "null" && phoneNumber !== "undefined") {
+            if(phoneNumber.trim() === "") {
+                user.phoneNumber = null;
+            } else {
+                // Remove any non-numeric characters and store as string
+                const cleanedPhone = phoneNumber.toString().replace(/[^0-9]/g, '');
+                user.phoneNumber = cleanedPhone || null;
+            }
         }
         
         if (!user.profile) user.profile = {};
