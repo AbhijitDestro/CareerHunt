@@ -103,7 +103,7 @@ export const updateProfile = async (req, res) => {
         }
 
         // Handle file uploads
-        if (req.files) {
+        if(req.files) {
             if (req.files.profilePhoto) {
                 const profilePhotoFile = req.files.profilePhoto[0];
                 const profilePhotoUri = getDataUri(profilePhotoFile);
@@ -119,6 +119,12 @@ export const updateProfile = async (req, res) => {
                 user.profile.resume = cloudResponse.secure_url;
                 user.profile.resumeOriginalName = resumeFile.originalname;
             }
+        }
+
+        // Handle resume removal - if resume is empty string, clear it
+        if(resume === '' && user.profile?.resume) {
+            user.profile.resume = '';
+            user.profile.resumeOriginalName = '';
         }
 
         // Update fields if provided
@@ -230,5 +236,51 @@ export const checkAuth = async (req, res) => {
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal server error", success: false });
+    }
+}
+
+export const downloadResume = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const user = await User.findById(userId).select("profile");
+        
+        if (!user || !user.profile?.resume) {
+            return res.status(404).json({ message: "Resume not found", success: false });
+        }
+
+        const resumeUrl = user.profile.resume;
+        
+        // If it's a Cloudinary URL, modify it to force download
+        if (resumeUrl.includes('cloudinary.com')) {
+            // Transform the URL to force download
+            const url = new URL(resumeUrl);
+            // Add transformation parameters to force download
+            url.searchParams.set('fl', 'attachment');
+            url.searchParams.set('filename', user.profile.resumeOriginalName || 'resume.pdf');
+            
+            // Fetch the file using axios
+            const response = await axios.get(url.toString(), { responseType: 'arraybuffer' });
+            
+            // Set appropriate headers for PDF download
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename="${user.profile.resumeOriginalName || 'resume.pdf'}"`);
+            res.setHeader('Content-Length', response.data.length);
+            
+            return res.send(response.data);
+        }
+        
+        // For other URLs, fetch using axios
+        const response = await axios.get(resumeUrl, { responseType: 'arraybuffer' });
+        const contentType = response.headers['content-type'] || 'application/octet-stream';
+        
+        res.setHeader('Content-Type', contentType);
+        res.setHeader('Content-Disposition', `attachment; filename="${user.profile.resumeOriginalName || 'resume.pdf'}"`);
+        res.setHeader('Content-Length', response.data.length);
+        
+        return res.send(response.data);
+        
+    } catch (error) {
+        console.log('Download resume error:', error);
+        return res.status(500).json({ message: "Error downloading resume", success: false });
     }
 }

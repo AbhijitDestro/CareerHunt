@@ -67,9 +67,41 @@ const Applicants = () => {
                                         <td className="py-4">{app.applicant?.phoneNumber || "N/A"}</td>
                                         <td className="py-4">
                                             {app.applicant?.profile?.resume ? 
-                                                <a href={app.applicant.profile.resume} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">
+                                                <button 
+                                                    onClick={async () => {
+                                                        try {
+                                                            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user/download-resume/${app.applicant._id}`, {
+                                                                method: 'GET',
+                                                                credentials: 'include',
+                                                                headers: {
+                                                                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                                                                }
+                                                            });
+                                                            
+                                                            if (!response.ok) {
+                                                                throw new Error('Failed to download resume');
+                                                            }
+                                                            
+                                                            const blob = await response.blob();
+                                                            const url = window.URL.createObjectURL(blob);
+                                                            const link = document.createElement('a');
+                                                            link.href = url;
+                                                            link.download = app.applicant.profile.resumeOriginalName || 'resume.pdf';
+                                                            document.body.appendChild(link);
+                                                            link.click();
+                                                            document.body.removeChild(link);
+                                                            window.URL.revokeObjectURL(url);
+                                                        } catch (error) {
+                                                            console.error('Error downloading resume:', error);
+                                                            toast.error('Failed to download resume');
+                                                            // Fallback: try opening in new tab
+                                                            window.open(`${import.meta.env.VITE_BACKEND_URL}/user/download-resume/${app.applicant._id}`, '_blank');
+                                                        }
+                                                    }}
+                                                    className="text-blue-400 hover:underline bg-transparent border-none cursor-pointer"
+                                                >
                                                     {app.applicant.profile.resumeOriginalName || "View Resume"}
-                                                </a> 
+                                                </button> 
                                                 : <span className="text-gray-600">No Resume</span>}
                                         </td>
                                          <td className="py-4">{new Date(app.createdAt).toLocaleDateString()}</td>

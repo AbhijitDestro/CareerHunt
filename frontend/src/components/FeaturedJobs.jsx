@@ -34,7 +34,7 @@ const FeaturedJobs = () => {
             <span className="text-[#0c8ede] font-medium tracking-wider uppercase text-sm mb-2 block">Featured Jobs</span>
             <h2 className="text-3xl md:text-4xl font-bold">Latest Opportunities</h2>
           </div>
-          <button onClick={() => navigate('/job-search')} className="hidden md:flex items-center gap-2 text-white/70 hover:text-white transition-colors">
+          <button onClick={() => navigate('/jobs')} className="hidden md:flex items-center gap-2 text-white/70 hover:text-white transition-colors">
             View all jobs <FiArrowRight />
           </button>
         </div>
@@ -84,7 +84,7 @@ const FeaturedJobs = () => {
           {jobs.length === 0 && <p className="text-gray-400 col-span-3 text-center">No featured jobs available at the moment.</p>}
         </div>
 
-        <button onClick={() => navigate('/signup')} className="mt-8 mx-auto w-full md:hidden flex items-center justify-center gap-2 py-3 rounded-full bg-white/10 text-white font-medium hover:bg-white/20 transition-colors cursor-pointer">
+        <button onClick={() => navigate('/jobs')} className="mt-8 mx-auto w-full md:hidden flex items-center justify-center gap-2 py-3 rounded-full bg-white/10 text-white font-medium hover:bg-white/20 transition-colors cursor-pointer">
             View all jobs <FiArrowRight />
         </button>
       </div>

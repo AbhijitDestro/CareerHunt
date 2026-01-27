@@ -3,8 +3,6 @@ import AppSidebar from '../../components/AppSidebar';
 import Footer from '../../components/Footer';
 import { useAuth } from '../../context/AuthContext';
 import { FiEdit2, FiMail, FiPhone, FiMapPin, FiLinkedin, FiUpload, FiX, FiCheck, FiFileText, FiBriefcase, FiGlobe } from 'react-icons/fi';
-import { Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { COMPANY_API_END_POINT } from '../../utils/constant';
@@ -18,7 +16,7 @@ const Profile = () => {
     const [profileData, setProfileData] = useState({
         bio: "",
         location: "",
-        phone: "",
+        phoneNumber: "",
         website: "",
         skills: [],
         linkedinProfile: "",
@@ -46,7 +44,7 @@ const Profile = () => {
             setProfileData({
                 bio: user.profile?.bio || "",
                 location: user.profile?.location || "",
-                phone: user.phoneNumber || "",
+                phoneNumber: user.phoneNumber || "",
                 website: user.profile?.website || "",
                 skills: user.profile?.skills || [],
                 linkedinProfile: user.profile?.linkedinProfile || "",
@@ -56,7 +54,16 @@ const Profile = () => {
                 profilePhoto: user.profile?.profilePhoto || "",
                 experiences: user.profile?.experiences || [],
             });
-            if(user.profile?.resumeOriginalName) setResumeFileName(user.profile.resumeOriginalName);
+            // Update resume file name based on current state
+            if(user.profile?.resumeOriginalName) {
+                setResumeFileName(user.profile.resumeOriginalName);
+            } else if(user.profile?.resume && !user.profile?.resumeOriginalName) {
+                // If resume exists but no original name, extract from URL
+                const urlParts = user.profile.resume.split('/');
+                setResumeFileName(urlParts[urlParts.length - 1] || 'resume.pdf');
+            } else if(!user.profile?.resume) {
+                setResumeFileName('');
+            }
         }
     }, [user]);
 
@@ -108,7 +115,7 @@ const Profile = () => {
                                         className="w-full h-full object-cover" 
                                     />
                                 ) : (
-                                    <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.username || 'User'}`} alt="Avatar" className="w-full h-full object-cover" />
+                                    <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Avatar" className="w-full h-full object-cover" />
                                 )}
                             </div>
                             <div className="flex-1 mb-2 text-center md:text-left">
@@ -136,7 +143,7 @@ const Profile = () => {
                                     </div>
                                     <div className="flex items-center gap-3">
                                         <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-gray-400"><FiPhone /></div>
-                                        <span>{profileData.phone || "Not set"}</span>
+                                        <span>{profileData.phoneNumber || "Not set"}</span>
                                     </div>
                                     <div className="flex items-center gap-3">
                                         <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-gray-400"><FiMapPin /></div>
@@ -157,7 +164,17 @@ const Profile = () => {
                                      {!isRecruiter && profileData.resume && (
                                         <div className="flex items-center gap-3">
                                             <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-gray-400"><FiFileText /></div>
-                                            <a href={profileData.resume} target="_blank" rel="noopener noreferrer" className="truncate hover:text-blue-400">Resume</a>
+                                            {profileData.resume instanceof File || typeof profileData.resume !== 'string' ? (
+                                                <span className="text-gray-300">Resume (Pending Upload)</span>
+                                            ) : (
+                                                <a href={profileData.resume} target="_blank" rel="noopener noreferrer" className="truncate hover:text-blue-400">Resume</a>
+                                            )}
+                                        </div>
+                                    )}
+                                    {/* Debug: Remove this after testing */}
+                                    {profileData.resume && (
+                                        <div className="text-xs text-gray-500 mt-2">
+                                            Debug: Resume type: {typeof profileData.resume}, instanceof File: {profileData.resume instanceof File ? 'yes' : 'no'}
                                         </div>
                                     )}
                                 </div>
@@ -341,12 +358,6 @@ const Profile = () => {
                                 </div>
                             </div>
                             
-                            {/* Common Field: Name (Should update fullname in backend, but userController expects fullname in root. The state 'profileData' doesn't seem to track fullname directly? Ah, useAuth stores it in `user`. We might need to handle fullname update distinct from profile or include it). 
-                               wait, userController `updateProfile` handles fullname from req.body.
-                               I need to add fullname to profileData state if I want to edit it.
-                               Currently profileData state doesn't have fullname. I should add it.
-                            */}
-                            
                             {/* Contact Information */}
                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
@@ -363,8 +374,8 @@ const Profile = () => {
                                     <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-2">Phone</label>
                                     <input 
                                         type="tel"
-                                        value={profileData.phone}
-                                        onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
+                                        value={profileData.phoneNumber}
+                                        onChange={(e) => setProfileData({...profileData, phoneNumber: e.target.value})}
                                         className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
                                         placeholder="+91 1234567890"
                                     />
@@ -488,8 +499,21 @@ const Profile = () => {
                                                 />
                                             </label>
                                             {resumeFileName && (
-                                                <div className="text-sm text-white flex items-center gap-2">
-                                                    <FiFileText /> {resumeFileName}
+                                                <div className="flex items-center justify-between">
+                                                    <div className="text-sm text-white flex items-center gap-2">
+                                                        <FiFileText /> {resumeFileName}
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setProfileData({...profileData, resume: ''});
+                                                            setResumeFileName('');
+                                                        }}
+                                                        className="text-red-400 hover:text-red-300 text-sm flex items-center gap-1 transition-colors"
+                                                    >
+                                                        <FiX className="w-4 h-4" />
+                                                        Remove
+                                                    </button>
                                                 </div>
                                             )}
                                         </div>

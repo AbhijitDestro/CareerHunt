@@ -211,7 +211,7 @@ const JobSearch = () => {
                 </div>
                 <div className="text-right">
                   <p className="text-green-400 font-semibold">{job.salary} LPA</p>
-                  <button onClick={() => navigate(`/jobs/${job._id}`)} className="mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors">
+                  <button onClick={() => navigate(`/job-search/${job._id}`)} className="mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors">
                     View & Apply
                   </button>
                 </div>

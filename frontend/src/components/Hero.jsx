@@ -29,7 +29,7 @@ const Hero = () => {
     if (location.trim()) params.append('location', location.trim());
     
     // Navigate to job search page with query parameters
-    navigate(`/job-search?${params.toString()}`);
+    navigate(`/jobs?${params.toString()}`);
   };
 
   useEffect(() => {
@@ -76,7 +76,7 @@ const Hero = () => {
     <div ref={containerRef} className="relative min-h-screen w-full bg-[#0d0d12] overflow-hidden text-white pt-32 pb-20 px-4 md:px-8 flex flex-col items-center justify-center font-sans">
      
       {/* Background Gradients */}
-      <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-purple-700/40 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-blue-700/40 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-5%] w-[600px] h-[600px] bg-blue-900/30 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute top-[40%] right-[10%] w-[300px] h-[300px] bg-purple-900/20 rounded-full blur-[100px] pointer-events-none" />
 

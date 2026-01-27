@@ -96,8 +96,7 @@ const PublicCompanies = () => {
             ) : companies.map((company) => (
               <div 
                 key={company._id} 
-                className="bg-white/5 border border-white/10 rounded-lg p-6 hover:bg-white/10 transition-colors cursor-pointer"
-                onClick={() => navigate(`/companies/${company._id}`)}
+                className="bg-white/5 border border-white/10 rounded-lg p-6 hover:bg-white/10 transition-colors h-[260px]"
               >
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-16 h-16 rounded-xl bg-white/10 flex items-center justify-center overflow-hidden">
@@ -109,19 +108,19 @@ const PublicCompanies = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-lg text-white truncate">{company.name}</h3>
-                    <p className="text-gray-400 text-sm">{company.location}</p>
+                    <p className="text-gray-400 text-sm">{company.address}</p>
                   </div>
                 </div>
                 
-                <p className="text-gray-300 text-sm line-clamp-3 mb-4">{company.description}</p>
+                <p className="text-gray-300 text-sm line-clamp-3 h-[100px]">{company.description}</p>
                 
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-gray-400">
-                    {company.jobCount || 0} open positions
-                  </span>
-                  <span className="text-blue-400 hover:text-blue-300">
-                    View Jobs →
-                  </span>
+                <div className="flex-col text-sm">
+                  <div className="text-gray-400">
+                    Email.- {company.email} 
+                  </div>
+                  <div className="text-gray-400">
+                    Phone No.- {company.phoneNumber} 
+                  </div>
                 </div>
               </div>
             ))}

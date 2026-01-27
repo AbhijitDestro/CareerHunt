@@ -7,6 +7,7 @@ import {
   updateProfile,
   deleteProfile,
   checkAuth,
+  downloadResume,
 } from "../controllers/usercontroller.js";
 import useAuth from "../middleware/userAuth.js";
 import { singleUpload, multiUpload } from "../middleware/multer.js";
@@ -20,5 +21,6 @@ router.route("/profile").get(useAuth, getProfile);
 router.route("/profile/update").post(useAuth, multiUpload, updateProfile);
 router.route("/profile/delete").delete(useAuth, deleteProfile);
 router.route("/me").get(useAuth, checkAuth);
+router.route("/download-resume/:userId").get(useAuth, downloadResume);
 
 export default router;

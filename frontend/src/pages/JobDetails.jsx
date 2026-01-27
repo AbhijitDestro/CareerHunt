@@ -71,7 +71,7 @@ const JobDetails = () => {
             <Navbar />
             
             <div className="max-w-7xl mx-auto px-4 py-12 md:py-20">
-                <Link to="/job-search" className="inline-flex items-center text-gray-400 hover:text-white mb-8 transition-colors">
+                <Link to="/jobs" className="inline-flex items-center text-gray-400 hover:text-white mb-8 transition-colors">
                     <FiArrowLeft className="mr-2" /> Back to Jobs
                 </Link>
 

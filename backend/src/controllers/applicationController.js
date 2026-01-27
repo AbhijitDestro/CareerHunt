@@ -62,7 +62,7 @@ export const getApplicant = async(req,res)=>{
         const jobWithApplications = await Job.findById(id).populate({
             path:"applications",
             options:{sort:{createdAt:-1}},
-            populate:{path:"applicant"}
+            populate:{path:"applicant", select:"fullname email phoneNumber profile"}
         });
         
         res.status(200).json({applications: jobWithApplications.applications, success: true});

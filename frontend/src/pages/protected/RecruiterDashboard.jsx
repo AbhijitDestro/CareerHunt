@@ -117,10 +117,10 @@ const RecruiterDashboard = ({ user }) => {
                                     <td className="py-4">{new Date(job.createdAt).toLocaleDateString()}</td>
                                     <td className="py-4"><span className="px-2 py-1 rounded bg-green-500/10 text-green-400 text-xs">Active</span></td>
                                     <td className="py-4 text-right pr-2 space-x-2">
-                                        <button onClick={() => navigate(`/admin/jobs/${job._id}/edit`)} className="text-gray-400 hover:text-white" title="Edit Job">
+                                        <button onClick={() => navigate(`/admin/jobs/${job._id}/edit`)} className="text-gray-400 hover:text-white cursor-pointer" title="Edit Job">
                                             <FiMoreHorizontal size={18} />
                                         </button>
-                                        <button onClick={() => navigate(`/admin/jobs/${job._id}/applicants`)} className="text-white bg-purple-600 px-3 py-1 rounded hover:bg-purple-700 text-sm">
+                                        <button onClick={() => navigate(`/admin/jobs/${job._id}/applicants`)} className="text-white bg-purple-600 px-3 py-1 rounded hover:bg-purple-700 text-sm cursor-pointer">
                                             Applicants
                                         </button>
                                     </td>
@@ -136,7 +136,7 @@ const RecruiterDashboard = ({ user }) => {
                      )}
 
             {/* Companies Section */}
-            <div className="bg-white/5 backdrop-blur-md rounded-3xl p-8 border border-white/5">
+            <div className="bg-white/5 backdrop-blur-md rounded-3xl p-8 border border-white/5 mt-10">
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-xl font-bold text-white">My Companies</h3>
                     <button onClick={() => navigate('/admin/companies')} className="text-purple-400 text-sm hover:text-purple-300">View All</button>

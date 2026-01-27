@@ -9,9 +9,11 @@ import SignIn from './pages/auth/SignIn'
 import Dashboard from './pages/protected/Dashboard'
 import Profile from './pages/protected/Profile'
 import JobDetails from './pages/JobDetails'
+import ProtectedJobDetails from './pages/protected/JobDetails'
 import Settings from './pages/protected/Settings'
 import JobSearch from './pages/protected/JobSearch'
 import PublicJobSearch from './pages/public/JobSearch'
+import Jobs from './pages/public/Jobs'
 import PublicCompanies from './pages/public/Companies'
 import Notifications from './pages/protected/Notifications'
 import AppliedJobs from './pages/protected/AppliedJobs'
@@ -34,13 +36,15 @@ const App = () => {
         <Route path="/for-employer" element={<ForEmployer />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
-        <Route path="/job-search" element={<PublicJobSearch />} />
+        <Route path="/jobs" element={<Jobs />} />
         <Route path="/companies" element={<PublicCompanies />} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
         <Route path="/applied-jobs" element={<ProtectedRoute><AppliedJobs /></ProtectedRoute>} />
+        <Route path="/job-search" element={<ProtectedRoute><JobSearch /></ProtectedRoute>} />
+        <Route path="/job-search/:id" element={<ProtectedRoute><ProtectedJobDetails /></ProtectedRoute>} />
         <Route path="/admin/jobs/:id/applicants" element={<ProtectedRoute><Applicants /></ProtectedRoute>} />
         <Route path="/admin/jobs/create" element={<ProtectedRoute><PostJob /></ProtectedRoute>} />
         <Route path="/admin/jobs/:id/edit" element={<ProtectedRoute><PostJob /></ProtectedRoute>} />
