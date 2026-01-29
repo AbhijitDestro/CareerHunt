@@ -8,6 +8,7 @@ import axios from 'axios';
 import { APPLICATION_API_END_POINT, JOB_API_END_POINT } from '../../utils/constant';
 import { useAuth } from '../../context/AuthContext';
 import { toast } from 'sonner';
+import SaveJobButton from '../../components/SaveJobButton';
 
 const ProtectedJobDetails = () => {
     const { id } = useParams();
@@ -85,7 +86,7 @@ const ProtectedJobDetails = () => {
                                 </div>
                             </div>
                             <div className="flex gap-3">
-                               {/* Actions could go here */}
+                               <SaveJobButton jobId={id} />
                             </div>
                          </div>
 

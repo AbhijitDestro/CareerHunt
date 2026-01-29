@@ -7,6 +7,8 @@ import userRoutes from './routes/userRoutes.js';
 import companyRoutes from './routes/companyRoutes.js';
 import jobRoutes from './routes/jobRoutes.js';
 import applicationRoutes from './routes/applicationRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
+import savedJobRoutes from './routes/savedJobRoutes.js';
 import publicJobRoutes from './routes/publicJobRoutes.js';
 import publicCompanyRoutes from './routes/publicCompanyRoutes.js';
 
@@ -43,6 +45,8 @@ app.use('/api/user', userRoutes);
 app.use('/api/company', companyRoutes);
 app.use('/api/job', jobRoutes);
 app.use('/api/application', applicationRoutes);
+app.use('/api', notificationRoutes);
+app.use('/api', savedJobRoutes);
 
 // Public APIs (no authentication required)
 app.use('/api/public/job', publicJobRoutes);

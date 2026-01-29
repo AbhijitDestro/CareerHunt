@@ -1,6 +1,7 @@
 import React from 'react';
 import { FiClock, FiDollarSign } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
+import SaveJobButton from './SaveJobButton';
 
 const JobCard = ({ job }) => {
   return (
@@ -9,9 +10,12 @@ const JobCard = ({ job }) => {
         <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-xl font-bold text-black overflow-hidden">
              {job.company?.logo ? <img src={job.company.logo} alt={job.company.name} className="w-full h-full object-cover"/> : job.company?.name?.[0] || 'C'}
         </div>
-        <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/10 text-gray-300 border border-white/5">
-          {job.jobType}
-        </span>
+        <div className="flex items-center gap-2">
+          <SaveJobButton jobId={job._id} size="md" />
+          <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/10 text-gray-300 border border-white/5">
+            {job.jobType}
+          </span>
+        </div>
       </div>
 
       <Link to={`/jobs/${job._id}`} className="block">

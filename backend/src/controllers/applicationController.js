@@ -82,6 +82,11 @@ export const updateStatus = async(req,res)=>{
         }
         application.status= status.toLowerCase();
         await application.save();
+        
+        // Create notification for status change
+        const { syncApplicationNotifications } = await import('./notificationController.js');
+        await syncApplicationNotifications(application.applicant);
+        
         res.status(200).json({message: 'Application status updated successfully', success: true});
     }catch(error){
         res.status(400).json({ message: error.message, success: false });

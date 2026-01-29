@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AppSidebar from '../../components/AppSidebar';
 import Footer from '../../components/Footer';
 import { useAuth } from '../../context/AuthContext';
-import { FiEdit2, FiMail, FiPhone, FiMapPin, FiLinkedin, FiUpload, FiX, FiCheck, FiFileText, FiBriefcase, FiGlobe } from 'react-icons/fi';
+import { FiEdit2, FiMail, FiPhone, FiMapPin, FiLinkedin, FiUpload, FiX, FiFileText, FiGithub, FiGlobe } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { COMPANY_API_END_POINT } from '../../utils/constant';
@@ -20,6 +20,7 @@ const Profile = () => {
         website: "",
         skills: [],
         linkedinProfile: "",
+        githubProfile: "",
         yearsOfExperience: "",
         companyName: "",
         resume: "",
@@ -48,6 +49,7 @@ const Profile = () => {
                 website: user.profile?.website || "",
                 skills: user.profile?.skills || [],
                 linkedinProfile: user.profile?.linkedinProfile || "",
+                githubProfile: user.profile?.githubProfile || "",
                 yearsOfExperience: user.profile?.yearsOfExperience || "",
                 companyName: user.profile?.companyName || "",
                 resume: user.profile?.resume || "",
@@ -149,16 +151,25 @@ const Profile = () => {
                                         <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-gray-400"><FiMapPin /></div>
                                         <span>{profileData.location || "Not set"}</span>
                                     </div>
+
+                                    <div className='mt-6'>
+                                        <h3 className="font-bold text-lg mb-4">Social Links</h3>
                                     {profileData.linkedinProfile && (
                                          <div className="flex items-center gap-3">
                                             <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-blue-400"><FiLinkedin /></div>
-                                            <a href={profileData.linkedinProfile} target="_blank" rel="noopener noreferrer" className="truncate hover:text-blue-400 text-blue-400">LinkedIn Profile</a>
+                                            <a href={profileData.linkedinProfile} target="_blank" rel="noopener noreferrer" className="truncate hover:text-blue-400 text-blue-600">LinkedIn</a>
+                                        </div>
+                                    )}
+                                    {profileData.githubProfile && (
+                                         <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-yellow-600 bg-gray-200"><FiGithub /></div>
+                                            <a href={profileData.githubProfile} target="_blank" rel="noopener noreferrer" className="truncate hover:text-yellow-400 text-yellow-600">GitHub</a>
                                         </div>
                                     )}
                                     {profileData.website && (
                                          <div className="flex items-center gap-3">
                                             <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-green-400"><FiGlobe /></div>
-                                            <a href={profileData.website} target="_blank" rel="noopener noreferrer" className="truncate hover:text-green-400 text-green-400">Website</a>
+                                            <a href={profileData.website} target="_blank" rel="noopener noreferrer" className="truncate hover:text-green-400 text-green-600">Website</a>
                                         </div>
                                     )}
                                      {!isRecruiter && profileData.resume && (
@@ -171,12 +182,7 @@ const Profile = () => {
                                             )}
                                         </div>
                                     )}
-                                    {/* Debug: Remove this after testing */}
-                                    {profileData.resume && (
-                                        <div className="text-xs text-gray-500 mt-2">
-                                            Debug: Resume type: {typeof profileData.resume}, instanceof File: {profileData.resume instanceof File ? 'yes' : 'no'}
-                                        </div>
-                                    )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -234,7 +240,7 @@ const Profile = () => {
                         {isRecruiter && (
                             <div className="md:col-span-2 space-y-6">
                                 {/* Social Links */}
-                                {(profileData.linkedinProfile || profileData.website) && (
+                                {(profileData.linkedinProfile || profileData.githubProfile || profileData.website) && (
                                     <div className="bg-white/5 backdrop-blur-md rounded-3xl p-6 border border-white/5">
                                         <h3 className="font-bold text-lg mb-4">Social Links</h3>
                                         <div className="space-y-3">
@@ -242,6 +248,12 @@ const Profile = () => {
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-blue-400"><FiLinkedin /></div>
                                                     <a href={profileData.linkedinProfile} target="_blank" rel="noopener noreferrer" className="truncate hover:text-blue-400 text-blue-400">LinkedIn Profile</a>
+                                                </div>
+                                            )}
+                                            {profileData.githubProfile && (
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-gray-800 bg-gray-200"><span className="font-bold text-sm">GH</span></div>
+                                                    <a href={profileData.githubProfile} target="_blank" rel="noopener noreferrer" className="truncate hover:text-gray-400 text-gray-300">GitHub Profile</a>
                                                 </div>
                                             )}
                                             {profileData.website && (
@@ -413,6 +425,15 @@ const Profile = () => {
                                                 type="url"
                                                 value={profileData.linkedinProfile}
                                                 onChange={(e) => setProfileData({...profileData, linkedinProfile: e.target.value})}
+                                                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-300 mb-2">GitHub</label>
+                                            <input 
+                                                type="url"
+                                                value={profileData.githubProfile}
+                                                onChange={(e) => setProfileData({...profileData, githubProfile: e.target.value})}
                                                 className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
                                             />
                                         </div>

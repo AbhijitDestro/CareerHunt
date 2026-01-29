@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { FiBriefcase, FiBookmark, FiMessageSquare } from 'react-icons/fi';
+import { FiBriefcase, FiBookmark } from 'react-icons/fi';
 import JobCard from '../../components/JobCard';
+import { FaRegThumbsUp } from "react-icons/fa6";
 import axios from 'axios';
 import { APPLICATION_API_END_POINT, JOB_API_END_POINT } from '../../utils/constant';
+import { savedJobAPI } from '../../api/savedJobAPI';
 
 const CandidateDashboard = ({ user }) => {
     const [appliedJobs, setAppliedJobs] = useState([]);
     const [recommendedJobs, setRecommendedJobs] = useState([]);
+    const [savedJobsCount, setSavedJobsCount] = useState(0);
+    const [accepted, setAccepted]=useState(0)
     
     useEffect(() => {
         const fetchApplied = async () => {
@@ -14,6 +18,7 @@ const CandidateDashboard = ({ user }) => {
                 const res = await axios.get(`${APPLICATION_API_END_POINT}/get/applied`, { withCredentials: true });
                 if(res.data.success){
                     setAppliedJobs(res.data.applications);
+                    setAccepted(res.data.applications.filter(app => app.status === 'accepted').length);
                 }
              } catch (error) {
                  console.log(error);
@@ -32,18 +37,32 @@ const CandidateDashboard = ({ user }) => {
             }
         }
 
+        const fetchSavedJobsCount = async () => {
+            try {
+                const response = await savedJobAPI.getSavedJobsCount();
+                if (response.success) {
+                    setSavedJobsCount(response.count);
+                }
+            } catch (error) {
+                console.log('Error fetching saved jobs count:', error);
+            }
+        }
+
         if(user) {
             fetchApplied();
             fetchRecommended();
+            fetchSavedJobsCount();
         }
     }, [user]);
+
+    // Calculate acceptance rate percentage
+    const acceptanceRate = appliedJobs.length > 0 ? Math.round((accepted / appliedJobs.length) * 100) : 0;
 
     // Stats
     const stats = [
         { label: 'Applied Jobs', value: appliedJobs.length, icon: FiBriefcase, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-         // Backend doesn't support 'Saved Jobs' or 'Interviews' tracking explicitly yet, so placeholder/0
-        { label: 'Saved Jobs', value: '0', icon: FiBookmark, color: 'text-purple-400', bg: 'bg-purple-500/10' },
-        { label: 'Interviews', value: '0', icon: FiMessageSquare, color: 'text-green-400', bg: 'bg-green-500/10' },
+        { label: 'Saved Jobs', value: savedJobsCount, icon: FiBookmark, color: 'text-purple-400', bg: 'bg-purple-500/10' },
+        { label: 'Got Acceptance Rate', value: `${acceptanceRate}%`, icon: FaRegThumbsUp , color: 'text-green-400', bg: 'bg-green-500/10' },
     ];
 
     return (

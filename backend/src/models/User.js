@@ -38,6 +38,8 @@ const userSchema = new mongoose.Schema({
         location: {type:String},
         yearsOfExperience: {type:Number, default: 0},
         linkedinProfile: {type:String},
+        githubProfile: {type:String},
+        website: {type:String},
         resumeOriginalName: {type:String},
         companyName: {type: String},
         profilePhoto: {type:String, default: ''},

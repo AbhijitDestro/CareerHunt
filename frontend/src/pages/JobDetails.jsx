@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiClock, FiDollarSign, FiMapPin, FiBriefcase, FiCheck } from 'react-icons/fi';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import SaveJobButton from '../components/SaveJobButton';
 import axios from 'axios';
 import { APPLICATION_API_END_POINT, PUBLIC_JOB_API_END_POINT } from '../utils/constant';
 import { useAuth } from '../context/AuthContext';
@@ -70,8 +71,8 @@ const JobDetails = () => {
         <div className="bg-[#0d0d12] min-h-screen text-white">
             <Navbar />
             
-            <div className="max-w-7xl mx-auto px-4 py-12 md:py-20">
-                <Link to="/jobs" className="inline-flex items-center text-gray-400 hover:text-white mb-8 transition-colors">
+            <div className="max-w-7xl mx-auto px-4 py-12 md:py-20 mt-8">
+                <Link to="/job-search" className="inline-flex items-center text-gray-400 hover:text-white mb-8 transition-colors">
                     <FiArrowLeft className="mr-2" /> Back to Jobs
                 </Link>
 
@@ -91,7 +92,7 @@ const JobDetails = () => {
                                     </div>
                                 </div>
                                 <div className="flex gap-3">
-                                   {/* Actions could go here */}
+                                   <SaveJobButton jobId={job._id} size="lg" />
                                 </div>
                              </div>
 

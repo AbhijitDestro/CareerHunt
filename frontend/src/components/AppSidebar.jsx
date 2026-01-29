@@ -16,11 +16,10 @@ import {
   Briefcase,
   Building2,
   User,
-  Settings,
   LogOut,
-  FileText,
   Bell,
   Search,
+  Bookmark,
 } from 'lucide-react'
 
 const AppSidebar = () => {
@@ -32,7 +31,6 @@ const AppSidebar = () => {
     const baseItems = [
       { title: 'Dashboard', icon: Home, href: '/dashboard' },
       { title: 'Profile', icon: User, href: '/profile' },
-      { title: 'Settings', icon: Settings, href: '/settings' },
     ]
 
     if (user?.role === 'recruiter') {
@@ -45,6 +43,7 @@ const AppSidebar = () => {
       return [
         ...baseItems,
         { title: 'Applied Jobs', icon: Briefcase, href: '/applied-jobs' },
+        { title: 'Saved Jobs', icon: Bookmark, href: '/saved-jobs' },
         { title: 'Job Search', icon: Search, href: '/job-search' },
         { title: 'Notifications', icon: Bell, href: '/notifications' },
       ]

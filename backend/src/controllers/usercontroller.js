@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import getDataUri from "../utils/datauri.js";
 import cloudinary from "../utils/cloudinary.js";
+import axios from 'axios';
 
 export const register = async(req,res)=>{
     try{
@@ -92,7 +93,7 @@ export const logout = async(req,res)=>{
 
 export const updateProfile = async (req, res) => {
     try {
-        const { fullname, email, phoneNumber, bio, skills, location, linkedinProfile, yearsOfExperience, companyName, experiences } = req.body;
+        const { fullname, email, phoneNumber, bio, skills, location, linkedinProfile, githubProfile, website, yearsOfExperience, companyName, experiences, resume } = req.body;
         
         const userId = req.id;
         let user = await User.findById(userId);
@@ -165,6 +166,8 @@ export const updateProfile = async (req, res) => {
 
         if(location) user.profile.location = location;
         if(linkedinProfile) user.profile.linkedinProfile = linkedinProfile;
+        if(githubProfile) user.profile.githubProfile = githubProfile;
+        if(website) user.profile.website = website;
         if(yearsOfExperience) user.profile.yearsOfExperience = Number(yearsOfExperience);
         if(companyName) user.profile.companyName = companyName;
         
