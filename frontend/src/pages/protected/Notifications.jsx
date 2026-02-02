@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import AppSidebar from '../../components/AppSidebar';
 import axios from 'axios';
-import { APPLICATION_API_END_POINT } from '../../utils/constant';
+import { NOTIFICATION_API_END_POINT } from '../../utils/constant';
 
 const Notifications = () => {
   const { user } = useAuth();
@@ -13,10 +13,10 @@ const Notifications = () => {
     const fetchNotifications = async () => {
       try {
         // First sync application notifications
-        await axios.post(`${APPLICATION_API_END_POINT}/sync-notifications`, {}, { withCredentials: true });
+        await axios.post(`${NOTIFICATION_API_END_POINT}/sync-notifications`, {}, { withCredentials: true });
         
         // Then fetch notifications from new API
-        const res = await axios.get('/api/notifications', { withCredentials: true });
+        const res = await axios.get(`${NOTIFICATION_API_END_POINT}/notifications`, { withCredentials: true });
         if (res.data.success) {
           setNotifications(res.data.notifications);
         }
@@ -35,7 +35,7 @@ const Notifications = () => {
     if (state === 'read') return;
     
     try {
-      await axios.put(`/api/notifications/${notificationId}/read`, {}, { withCredentials: true });
+      await axios.put(`${NOTIFICATION_API_END_POINT}/notifications/${notificationId}/read`, {}, { withCredentials: true });
       setNotifications(prev =>
         prev.map(notif =>
           notif._id === notificationId ? { ...notif, state: 'read' } : notif
@@ -54,7 +54,7 @@ const Notifications = () => {
 
   const markAllAsRead = async () => {
     try {
-      await axios.put('/api/notifications/mark-all-read', {}, { withCredentials: true });
+      await axios.put(`${NOTIFICATION_API_END_POINT}/notifications/mark-all-read`, {}, { withCredentials: true });
       setNotifications(prev => prev.map(notif => ({ ...notif, state: 'read' })));
     } catch (error) {
       console.error('Error marking all as read:', error);

@@ -17,7 +17,7 @@ const Navbar = () => {
       </div>
 
       {/* Desktop Menu */}
-      <div className="hidden md:flex items-center space-x-6 text-sm font-medium text-gray-300">
+      <div className="hidden lg:flex items-center space-x-6 text-sm font-medium text-gray-300">
         <Link to="/jobs" className="hover:text-white transition-colors">Jobs</Link>
         <span className="text-gray-500">+</span>
         <Link to="/companies" className="hover:text-white transition-colors">Companies</Link>
@@ -30,7 +30,7 @@ const Navbar = () => {
       </div>
 
       {/* Desktop Login Button */}
-      <div className="hidden md:block">
+      <div className="hidden lg:block">
         {user ? (
           <Link to="/dashboard">
             <button className="flex items-center cursor-pointer text-black rounded-xl gap-2 px-4 py-2 text-sm font-medium bg-white transition-opacity hover:opacity-80">
@@ -48,7 +48,7 @@ const Navbar = () => {
       </div>
 
       {/* Mobile Menu Button */}
-      <div className="md:hidden">
+      <div className="lg:hidden">
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className="text-white hover:text-gray-300 transition-colors"
@@ -59,7 +59,7 @@ const Navbar = () => {
 
       {/* Mobile Menu Dropdown */}
       {isMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-black/90 backdrop-blur-sm border-t border-gray-800">
+        <div className="lg:hidden absolute top-full left-0 w-full bg-black/90 backdrop-blur-sm border-t border-gray-800">
           <div className="flex flex-col px-8 py-4 space-y-4">
             <Link to="/job-search" className="hover:text-white transition-colors py-2" onClick={() => setIsMenuOpen(false)}>Jobs</Link>
             <Link to="/companies" className="hover:text-white transition-colors py-2" onClick={() => setIsMenuOpen(false)}>Companies</Link>

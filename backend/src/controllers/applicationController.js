@@ -1,5 +1,7 @@
 import { Application } from '../models/Application.js';
 import { Job } from '../models/Job.js';
+import { User } from '../models/User.js';
+import { createNotification } from './notificationController.js';
 
 export const applyJob = async(req,res)=>{
     try{
@@ -21,6 +23,16 @@ export const applyJob = async(req,res)=>{
         });
         job.applications.push(newApplication._id);
         await job.save();
+        
+        const applicant = await User.findById(userId).select('fullname');
+        await createNotification(
+            job.created_by,
+            'job_posting',
+            'New Application',
+            `${applicant?.fullname || 'A candidate'} applied for ${job.title}.`,
+            `/admin/jobs/${jobId}/applicants`,
+            newApplication._id
+        );
         res.status(201).json({ message: 'Application submitted successfully', success: true });
     }catch(error){
         res.status(400).json({ message: error.message, success: false });

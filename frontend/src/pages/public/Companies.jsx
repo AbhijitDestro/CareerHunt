@@ -3,10 +3,9 @@ import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import axios from 'axios';
 import { PUBLIC_COMPANY_API_END_POINT } from '../../utils/constant';
-import { useNavigate } from 'react-router-dom';
+ 
 
 const PublicCompanies = () => {
-  const navigate = useNavigate();
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');

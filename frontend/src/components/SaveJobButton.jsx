@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FiBookmark, FiCheck } from 'react-icons/fi';
 import { savedJobAPI } from '../api/savedJobAPI';
 
-const SaveJobButton = ({ jobId, size = 'md', showText = false }) => {
+const SaveJobButton = ({ jobId, size = 'md' }) => {
   const [isSaved, setIsSaved] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);

@@ -46,6 +46,9 @@ const SignIn = () => {
             console.log('Login response:', res.data);
             if(res.data.success){
                 setUser(res.data.user);
+                if (res.data.token) {
+                    localStorage.setItem('token', res.data.token);
+                }
                 toast.success('Login Successful! Welcome back!');
                 navigate('/dashboard');
             }

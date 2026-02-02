@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { FiUsers, FiBriefcase, FiPlus, FiMoreHorizontal } from 'react-icons/fi';
+import { FiUsers, FiBriefcase, FiPlus, FiEdit } from 'react-icons/fi';
 import axios from 'axios';
 import { JOB_API_END_POINT, COMPANY_API_END_POINT } from '../../utils/constant';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
 
 const RecruiterDashboard = ({ user }) => {
     const [jobs, setJobs] = useState([]);
@@ -88,7 +87,6 @@ const RecruiterDashboard = ({ user }) => {
              <div className="bg-white/5 backdrop-blur-md rounded-3xl p-8 border border-white/5">
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-xl font-bold text-white">Active Listings</h3>
-                    <button className="text-purple-400 text-sm hover:text-purple-300">View All</button>
                 </div>
                 
                 <div className="overflow-x-auto">
@@ -99,7 +97,8 @@ const RecruiterDashboard = ({ user }) => {
                                 <th className="pb-4">Applicants</th>
                                 <th className="pb-4">Posted</th>
                                 <th className="pb-4">Status</th>
-                                <th className="pb-4 text-right">Action</th>
+                                 <th className="pb-4">Edit</th>
+                                <th className="pb-4">Action</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
@@ -116,10 +115,12 @@ const RecruiterDashboard = ({ user }) => {
                                     </td>
                                     <td className="py-4">{new Date(job.createdAt).toLocaleDateString()}</td>
                                     <td className="py-4"><span className="px-2 py-1 rounded bg-green-500/10 text-green-400 text-xs">Active</span></td>
-                                    <td className="py-4 text-right pr-2 space-x-2">
+                                    <td className="py-4">
                                         <button onClick={() => navigate(`/admin/jobs/${job._id}/edit`)} className="text-gray-400 hover:text-white cursor-pointer" title="Edit Job">
-                                            <FiMoreHorizontal size={18} />
+                                            <FiEdit size={18} />
                                         </button>
+                                    </td>
+                                    <td className="py-4">
                                         <button onClick={() => navigate(`/admin/jobs/${job._id}/applicants`)} className="text-white bg-purple-600 px-3 py-1 rounded hover:bg-purple-700 text-sm cursor-pointer">
                                             Applicants
                                         </button>
@@ -144,7 +145,7 @@ const RecruiterDashboard = ({ user }) => {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {companies.slice(0, 3).map(company => (
-                        <div key={company._id} className="bg-white/5 rounded-2xl p-4 border border-white/10 hover:border-purple-500/30 transition-colors cursor-pointer" onClick={() => navigate(`/admin/companies/${company._id}`)}>
+                        <div key={company._id} className="h-[200px] bg-white/5 rounded-2xl p-4 border border-white/10 hover:border-purple-500/30 transition-colors cursor-pointer" onClick={() => navigate(`/admin/companies/${company._id}`)}>
                             <div className="flex items-center gap-3 mb-3">
                                 <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center overflow-hidden">
                                     {company.logo ? (
@@ -154,11 +155,11 @@ const RecruiterDashboard = ({ user }) => {
                                     )}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <h4 className="font-semibold text-white truncate">{company.name}</h4>
-                                    <p className="text-gray-400 text-xs">{company.email}</p>
+                                    <h4 className="font-semibold text-lg text-white truncate">{company.name}</h4>
+                                    <p className="text-gray-400 text-sm">{company.email}</p>
                                 </div>
                             </div>
-                            <p className="text-gray-300 text-sm line-clamp-2">{company.description}</p>
+                            <p className="text-gray-300 text-sm">{company.description}</p>
                         </div>
                     ))}
                 </div>

@@ -38,6 +38,7 @@ const AppSidebar = () => {
         ...baseItems,
         { title: 'My Companies', icon: Building2, href: '/admin/companies' },
         { title: 'My Jobs', icon: Briefcase, href: '/admin/jobs' },
+        { title: 'Notifications', icon: Bell, href: '/notifications' },
       ]
     } else if (user?.role === 'candidate') {
       return [

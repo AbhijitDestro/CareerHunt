@@ -23,7 +23,7 @@ import CompanyCreate from './pages/protected/CompanyCreate'
 import PostJob from './pages/protected/PostJob'
 import RecruiterJobs from './pages/protected/RecruiterJobs'
 import ProtectedRoute from './components/ProtectedRoute'
-import { AuthProvider } from './context/AuthContext'
+import { AuthProvider } from './context/AuthProvider'
 
 const App = () => {
   return (

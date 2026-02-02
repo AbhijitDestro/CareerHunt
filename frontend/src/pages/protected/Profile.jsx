@@ -31,7 +31,6 @@ const Profile = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [profilePicturePreview, setProfilePicturePreview] = useState(null);
     const [resumeFileName, setResumeFileName] = useState('');
-    const [uploadStatus, setUploadStatus] = useState({ profilePicture: null, resume: null });
     const [isExperienceModalOpen, setIsExperienceModalOpen] = useState(false);
     const [newExperience, setNewExperience] = useState({
         jobRole: '',
@@ -40,34 +39,34 @@ const Profile = () => {
         description: ''
     });
 
-    useEffect(() => {
+    const openEditModal = () => {
         if (user) {
+            const u = user;
             setProfileData({
-                bio: user.profile?.bio || "",
-                location: user.profile?.location || "",
-                phoneNumber: user.phoneNumber || "",
-                website: user.profile?.website || "",
-                skills: user.profile?.skills || [],
-                linkedinProfile: user.profile?.linkedinProfile || "",
-                githubProfile: user.profile?.githubProfile || "",
-                yearsOfExperience: user.profile?.yearsOfExperience || "",
-                companyName: user.profile?.companyName || "",
-                resume: user.profile?.resume || "",
-                profilePhoto: user.profile?.profilePhoto || "",
-                experiences: user.profile?.experiences || [],
+                bio: u.profile?.bio || "",
+                location: u.profile?.location || "",
+                phoneNumber: u.phoneNumber || "",
+                website: u.profile?.website || "",
+                skills: u.profile?.skills || [],
+                linkedinProfile: u.profile?.linkedinProfile || "",
+                githubProfile: u.profile?.githubProfile || "",
+                yearsOfExperience: u.profile?.yearsOfExperience || "",
+                companyName: u.profile?.companyName || "",
+                resume: u.profile?.resume || "",
+                profilePhoto: u.profile?.profilePhoto || "",
+                experiences: u.profile?.experiences || [],
             });
-            // Update resume file name based on current state
-            if(user.profile?.resumeOriginalName) {
-                setResumeFileName(user.profile.resumeOriginalName);
-            } else if(user.profile?.resume && !user.profile?.resumeOriginalName) {
-                // If resume exists but no original name, extract from URL
-                const urlParts = user.profile.resume.split('/');
+            if (u.profile?.resumeOriginalName) {
+                setResumeFileName(u.profile.resumeOriginalName);
+            } else if (u.profile?.resume && !u.profile?.resumeOriginalName) {
+                const urlParts = u.profile.resume.split('/');
                 setResumeFileName(urlParts[urlParts.length - 1] || 'resume.pdf');
-            } else if(!user.profile?.resume) {
+            } else {
                 setResumeFileName('');
             }
         }
-    }, [user]);
+        setIsEditing(true);
+    };
 
     useEffect(() => {
         const fetchCompanies = async () => {
@@ -122,10 +121,10 @@ const Profile = () => {
                             </div>
                             <div className="flex-1 mb-2 text-center md:text-left">
                                 <h1 className="text-3xl font-bold">{user?.fullname || 'John Doe'}</h1>
-                                <p className="text-gray-400 text-lg capitalize">{user?.role} {profileData.location ? `• ${profileData.location}` : ''}</p>
+                                <p className="text-gray-400 text-lg capitalize">{user?.role} {user?.profile?.location ? `• ${user.profile.location}` : ''}</p>
                             </div>
                             <button 
-                                onClick={() => setIsEditing(true)}
+                                onClick={openEditModal}
                                 className="flex items-center gap-2 px-4 py-2 md:mt-2 bg-white/10 hover:bg-white/20 rounded-full text-sm font-medium transition-colors border border-white/5 cursor-pointer"
                             >
                                 <FiEdit2 /> Edit Profile
@@ -154,22 +153,22 @@ const Profile = () => {
 
                                     <div className='mt-6'>
                                         <h3 className="font-bold text-lg mb-4">Social Links</h3>
-                                    {profileData.linkedinProfile && (
+                                    {user?.profile?.linkedinProfile && (
                                          <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-blue-400"><FiLinkedin /></div>
-                                            <a href={profileData.linkedinProfile} target="_blank" rel="noopener noreferrer" className="truncate hover:text-blue-400 text-blue-600">LinkedIn</a>
+                                            <a href={user.profile.linkedinProfile} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-blue-400"><FiLinkedin /></a>
+                                            <a href={user.profile.linkedinProfile} target="_blank" rel="noopener noreferrer" className="truncate hover:text-blue-400 text-blue-600">LinkedIn</a>
                                         </div>
                                     )}
-                                    {profileData.githubProfile && (
+                                    {user?.profile?.githubProfile && (
                                          <div className="flex items-center gap-3">
                                             <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-yellow-600 bg-gray-200"><FiGithub /></div>
-                                            <a href={profileData.githubProfile} target="_blank" rel="noopener noreferrer" className="truncate hover:text-yellow-400 text-yellow-600">GitHub</a>
+                                            <a href={user.profile.githubProfile} target="_blank" rel="noopener noreferrer" className="truncate hover:text-yellow-400 text-yellow-600">GitHub</a>
                                         </div>
                                     )}
-                                    {profileData.website && (
+                                    {user?.profile?.website && (
                                          <div className="flex items-center gap-3">
                                             <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-green-400"><FiGlobe /></div>
-                                            <a href={profileData.website} target="_blank" rel="noopener noreferrer" className="truncate hover:text-green-400 text-green-600">Website</a>
+                                            <a href={user.profile.website} target="_blank" rel="noopener noreferrer" className="truncate hover:text-green-400 text-green-600">Website</a>
                                         </div>
                                     )}
                                      {!isRecruiter && profileData.resume && (
@@ -240,26 +239,26 @@ const Profile = () => {
                         {isRecruiter && (
                             <div className="md:col-span-2 space-y-6">
                                 {/* Social Links */}
-                                {(profileData.linkedinProfile || profileData.githubProfile || profileData.website) && (
+                                {(user?.profile?.linkedinProfile || user?.profile?.githubProfile || user?.profile?.website) && (
                                     <div className="bg-white/5 backdrop-blur-md rounded-3xl p-6 border border-white/5">
                                         <h3 className="font-bold text-lg mb-4">Social Links</h3>
                                         <div className="space-y-3">
-                                            {profileData.linkedinProfile && (
+                                            {user?.profile?.linkedinProfile && (
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-blue-400"><FiLinkedin /></div>
-                                                    <a href={profileData.linkedinProfile} target="_blank" rel="noopener noreferrer" className="truncate hover:text-blue-400 text-blue-400">LinkedIn Profile</a>
+                                                    <a href={user.profile.linkedinProfile} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-blue-400"><FiLinkedin /></a>
+                                                    <a href={user.profile.linkedinProfile} target="_blank" rel="noopener noreferrer" className="truncate hover:text-blue-400 text-blue-400">LinkedIn Profile</a>
                                                 </div>
                                             )}
-                                            {profileData.githubProfile && (
+                                            {user?.profile?.githubProfile && (
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-gray-800 bg-gray-200"><span className="font-bold text-sm">GH</span></div>
-                                                    <a href={profileData.githubProfile} target="_blank" rel="noopener noreferrer" className="truncate hover:text-gray-400 text-gray-300">GitHub Profile</a>
+                                                    <a href={user.profile.githubProfile} target="_blank" rel="noopener noreferrer" className="truncate hover:text-gray-400 text-gray-300">GitHub Profile</a>
                                                 </div>
                                             )}
-                                            {profileData.website && (
+                                            {user?.profile?.website && (
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-green-400"><FiGlobe /></div>
-                                                    <a href={profileData.website} target="_blank" rel="noopener noreferrer" className="truncate hover:text-green-400 text-green-400">Website</a>
+                                                    <a href={user.profile.website} target="_blank" rel="noopener noreferrer" className="truncate hover:text-green-400 text-green-400">Website</a>
                                                 </div>
                                             )}
                                         </div>
@@ -393,6 +392,20 @@ const Profile = () => {
                                     />
                                 </div>
                             </div>
+
+                            {isRecruiter && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-300 mb-2">LinkedIn</label>
+                                        <input 
+                                            type="url"
+                                            value={profileData.linkedinProfile}
+                                            onChange={(e) => setProfileData({...profileData, linkedinProfile: e.target.value})}
+                                            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
+                                        />
+                                    </div>
+                                </div>
+                            )}
 
                             {!isRecruiter && (
                                 <>
@@ -591,7 +604,33 @@ const Profile = () => {
                             <button 
                                 onClick={async () => {
                                     setIsLoading(true);
-                                    await updateProfile(profileData);
+                                    const result = await updateProfile(profileData);
+                                    if (result?.success && result.user) {
+                                        const u = result.user;
+                                        setProfileData({
+                                            bio: u.profile?.bio || "",
+                                            location: u.profile?.location || "",
+                                            phoneNumber: u.phoneNumber || "",
+                                            website: u.profile?.website || "",
+                                            skills: u.profile?.skills || [],
+                                            linkedinProfile: u.profile?.linkedinProfile || "",
+                                            githubProfile: u.profile?.githubProfile || "",
+                                            yearsOfExperience: u.profile?.yearsOfExperience || "",
+                                            companyName: u.profile?.companyName || "",
+                                            resume: u.profile?.resume || "",
+                                            profilePhoto: u.profile?.profilePhoto || "",
+                                            experiences: u.profile?.experiences || [],
+                                        });
+                                        if (u.profile?.resumeOriginalName) {
+                                            setResumeFileName(u.profile.resumeOriginalName);
+                                        } else if (u.profile?.resume && !u.profile?.resumeOriginalName) {
+                                            const urlParts = u.profile.resume.split('/');
+                                            setResumeFileName(urlParts[urlParts.length - 1] || 'resume.pdf');
+                                        } else {
+                                            setResumeFileName('');
+                                        }
+                                        setProfilePicturePreview(null);
+                                    }
                                     setIsEditing(false);
                                     setIsLoading(false);
                                 }}

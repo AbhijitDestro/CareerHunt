@@ -4,7 +4,6 @@ import axios from 'axios';
 import { COMPANY_API_END_POINT } from '../../utils/constant';
 import AppSidebar from '../../components/AppSidebar';
 import { FiPlus, FiEdit2 } from 'react-icons/fi';
-import { toast } from 'sonner';
 
 const Companies = () => {
     const navigate = useNavigate();

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { APPLICATION_API_END_POINT } from '../../utils/constant';
+import { APPLICATION_API_END_POINT, USER_API_END_POINT } from '../../utils/constant';
 import AppSidebar from '../../components/AppSidebar';
 import { toast } from 'sonner';
 
@@ -70,12 +70,11 @@ const Applicants = () => {
                                                 <button 
                                                     onClick={async () => {
                                                         try {
-                                                            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user/download-resume/${app.applicant._id}`, {
+                                                            const token = localStorage.getItem('token');
+                                                            const response = await fetch(`${USER_API_END_POINT}/download-resume/${app.applicant._id}`, {
                                                                 method: 'GET',
                                                                 credentials: 'include',
-                                                                headers: {
-                                                                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                                                                }
+                                                                headers: token ? { Authorization: `Bearer ${token}` } : {}
                                                             });
                                                             
                                                             if (!response.ok) {
@@ -84,18 +83,11 @@ const Applicants = () => {
                                                             
                                                             const blob = await response.blob();
                                                             const url = window.URL.createObjectURL(blob);
-                                                            const link = document.createElement('a');
-                                                            link.href = url;
-                                                            link.download = app.applicant.profile.resumeOriginalName || 'resume.pdf';
-                                                            document.body.appendChild(link);
-                                                            link.click();
-                                                            document.body.removeChild(link);
-                                                            window.URL.revokeObjectURL(url);
+                                                            window.open(url, '_blank', 'noopener,noreferrer');
+                                                            setTimeout(() => window.URL.revokeObjectURL(url), 2000);
                                                         } catch (error) {
                                                             console.error('Error downloading resume:', error);
                                                             toast.error('Failed to download resume');
-                                                            // Fallback: try opening in new tab
-                                                            window.open(`${import.meta.env.VITE_BACKEND_URL}/user/download-resume/${app.applicant._id}`, '_blank');
                                                         }
                                                     }}
                                                     className="text-blue-400 hover:underline bg-transparent border-none cursor-pointer"
