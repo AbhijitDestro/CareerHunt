@@ -13,24 +13,34 @@ const Profile = () => {
     const [companies, setCompanies] = useState([]);
     const navigate = useNavigate();
     
-    const [profileData, setProfileData] = useState({
-        bio: "",
-        location: "",
-        phoneNumber: "",
-        website: "",
-        skills: [],
-        linkedinProfile: "",
-        githubProfile: "",
-        yearsOfExperience: "",
-        companyName: "",
-        resume: "",
-        profilePhoto: "",
-        experiences: [],
-    });
+    // Initialize state from user context
+    const [profileData, setProfileData] = useState(() => ({
+        bio: user?.profile?.bio || "",
+        location: user?.profile?.location || "",
+        phoneNumber: user?.phoneNumber || "",
+        website: user?.profile?.website || "",
+        skills: user?.profile?.skills || [],
+        linkedinProfile: user?.profile?.linkedinProfile || "",
+        githubProfile: user?.profile?.githubProfile || "",
+        yearsOfExperience: user?.profile?.yearsOfExperience || "",
+        companyName: user?.profile?.companyName || "",
+        resume: user?.profile?.resume || "",
+        profilePhoto: user?.profile?.profilePhoto || "",
+        experiences: user?.profile?.experiences || [],
+    }));
+    
     const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [profilePicturePreview, setProfilePicturePreview] = useState(null);
-    const [resumeFileName, setResumeFileName] = useState('');
+    const [resumeFileName, setResumeFileName] = useState(() => {
+        if (user?.profile?.resumeOriginalName) {
+            return user.profile.resumeOriginalName;
+        } else if (user?.profile?.resume && !user?.profile?.resumeOriginalName) {
+            const urlParts = user.profile.resume.split('/');
+            return urlParts[urlParts.length - 1] || 'resume.pdf';
+        }
+        return '';
+    });
     const [isExperienceModalOpen, setIsExperienceModalOpen] = useState(false);
     const [newExperience, setNewExperience] = useState({
         jobRole: '',
@@ -39,32 +49,9 @@ const Profile = () => {
         description: ''
     });
 
+    
+
     const openEditModal = () => {
-        if (user) {
-            const u = user;
-            setProfileData({
-                bio: u.profile?.bio || "",
-                location: u.profile?.location || "",
-                phoneNumber: u.phoneNumber || "",
-                website: u.profile?.website || "",
-                skills: u.profile?.skills || [],
-                linkedinProfile: u.profile?.linkedinProfile || "",
-                githubProfile: u.profile?.githubProfile || "",
-                yearsOfExperience: u.profile?.yearsOfExperience || "",
-                companyName: u.profile?.companyName || "",
-                resume: u.profile?.resume || "",
-                profilePhoto: u.profile?.profilePhoto || "",
-                experiences: u.profile?.experiences || [],
-            });
-            if (u.profile?.resumeOriginalName) {
-                setResumeFileName(u.profile.resumeOriginalName);
-            } else if (u.profile?.resume && !u.profile?.resumeOriginalName) {
-                const urlParts = u.profile.resume.split('/');
-                setResumeFileName(urlParts[urlParts.length - 1] || 'resume.pdf');
-            } else {
-                setResumeFileName('');
-            }
-        }
         setIsEditing(true);
     };
 
