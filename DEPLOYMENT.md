@@ -77,3 +77,16 @@ npm run build
 2. Install dependencies in both `frontend` and `backend` folders.
 3. Create a `.env` file in the `backend` folder with the necessary variables.
 4. Run `npm run dev` in both folders.
+
+---
+
+## Troubleshooting
+
+### 1. Authentication Issues (401 Unauthorized)
+
+If you encounter 401 Unauthorized errors after logging in or during initial authentication checks in a deployed environment, consider the following:
+
+- **Cross-Domain Cookies**: Browsers often block third-party cookies. The application is configured to use `sameSite: 'none'` and `secure: true` for cookies to support cross-domain communication between Vercel and Render.
+- **Authorization Header**: As a fallback, the application stores the JWT token in `localStorage` and automatically attaches it to every outgoing request using an Axios interceptor.
+- **Environment Variables**: Double-check that `JWT_SECRET` is identical on both local and production environments, and that `FRONTEND_URL` on Render is set to your actual Vercel URL.
+- **CORS Configuration**: Ensure that the `FRONTEND_URL` provided to the backend matches exactly (including `https://` and no trailing slash) with your frontend URL.

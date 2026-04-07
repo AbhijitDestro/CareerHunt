@@ -49,6 +49,9 @@ const SignUp = () => {
             if(res.data.success){
                 toast.success('Sign Up Successful! Welcome to CareerHunt!');
                 setUser(res.data.user);
+                if (res.data.token) {
+                    localStorage.setItem('token', res.data.token);
+                }
                 navigate('/dashboard'); 
             }
         }

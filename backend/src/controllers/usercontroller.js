@@ -40,7 +40,7 @@ export const register = async(req,res)=>{
         }
         const token= jwt.sign(tokenData, process.env.JWT_SECRET, {expiresIn: '1d'});
         
-        return res.status(201).cookie('token', token, {maxAge: 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'strict'}).json({message: 'User registered successfully', success: true, user: newUser});
+        return res.status(201).cookie('token', token, {maxAge: 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'none', secure: true}).json({message: 'User registered successfully', success: true, user: newUser, token});
     }catch(error){
         console.error('Registration error:', error);
         console.error('Error stack:', error.stack);
@@ -74,7 +74,7 @@ export const login = async(req,res)=>{
             userId:user._id
         }
         const token= jwt.sign(tokenData, process.env.JWT_SECRET, {expiresIn: '1d'});
-        return res.status(200).cookie('token', token, {maxAge: 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'strict'}).json({message: `Welcome back ${user.role}, ${user.fullname}`, success: true, user, token});
+        return res.status(200).cookie('token', token, {maxAge: 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'none', secure: true}).json({message: `Welcome back ${user.role}, ${user.fullname}`, success: true, user, token});
     }catch(error){
         return res.status(500).json({message: error.message, success: false
         });
@@ -83,7 +83,7 @@ export const login = async(req,res)=>{
 
 export const logout = async(req,res)=>{
     try{
-        return res.status(200).cookie('token', '', {httpOnly: true, expires: new Date(Date.now()), httpOnly: true, sameSite: 'strict'}).json({message: 'User logged out successfully', success: true
+        return res.status(200).cookie('token', '', {httpOnly: true, expires: new Date(Date.now()), sameSite: 'none', secure: true}).json({message: 'User logged out successfully', success: true
         });
     }catch(error){
         return res.status(500).json({message: error.message, success: false
